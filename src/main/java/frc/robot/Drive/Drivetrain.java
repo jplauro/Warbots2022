@@ -4,6 +4,9 @@
 
 package frc.robot.Drive;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -19,8 +22,6 @@ import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SerialPort;
@@ -32,21 +33,19 @@ import frc.robot.Util.sim.NavxWrapper;
 import frc.robot.Util.sim.RevEncoderSimWrapper;
 
 public class Drivetrain extends SubsystemBase {
-  protected final SimableCANSparkMax rightBackMotor, leftBackMotor, rightFrontMotor, leftFrontMotor;
-  protected final DifferentialDrive diffDrive;
+  public enum Motor {
+    RIGHT_BACK, RIGHT_FRONT, LEFT_BACK, LEFT_FRONT;
+  }
 
-  protected final RelativeEncoder leftBackEncoder, leftFrontEncoder, rightBackEncoder, rightFrontEncoder;
-  protected final double countsPerMotorRevolution;
-  protected double openLoopRampRate = 0.2;
+  private final EnumMap<Motor, CANSparkMax> motors = new EnumMap<>(Motor.class);
+  private final EnumMap<Motor, RelativeEncoder> encoders = new EnumMap<>(Motor.class);
+  private final DifferentialDrive diffDrive;
+
   // The gyro sensor
-  protected final AHRS gyro;
+  private final AHRS gyro;
 
   // Odometry class for tracking robot pose
-  protected final DifferentialDriveOdometry odometry;
-
-  // Network Table
-  protected final NetworkTableInstance instance;
-  protected final NetworkTable table;
+  private final DifferentialDriveOdometry odometry;
 
   // Sim Variables
   private NavxWrapper simGryo;
@@ -54,80 +53,153 @@ public class Drivetrain extends SubsystemBase {
   private RevEncoderSimWrapper leftencsim;
   private RevEncoderSimWrapper rightencsim;
 
-  /** Creates a new Drivetrain. */
   public Drivetrain() {
-    rightBackMotor = new SimableCANSparkMax(Constants.rightBackMotorID, MotorType.kBrushless);
-    leftBackMotor = new SimableCANSparkMax(Constants.leftBackMotorID, MotorType.kBrushless);
-    rightFrontMotor = new SimableCANSparkMax(Constants.rightFrontMotorID, MotorType.kBrushless);
-    leftFrontMotor = new SimableCANSparkMax(Constants.leftFrontMotorID, MotorType.kBrushless);
+    this.motors.putAll(Map.of(
+      Motor.RIGHT_BACK, new SimableCANSparkMax(Constants.rightBackMotorID, MotorType.kBrushless),
+      Motor.RIGHT_FRONT, new SimableCANSparkMax(Constants.rightFrontMotorID, MotorType.kBrushless),
+      Motor.LEFT_BACK, new SimableCANSparkMax(Constants.leftBackMotorID, MotorType.kBrushless),
+      Motor.LEFT_FRONT, new SimableCANSparkMax(Constants.leftFrontMotorID, MotorType.kBrushless)
+    ));
 
-    rightBackMotor.restoreFactoryDefaults();
-    rightFrontMotor.restoreFactoryDefaults();
-    leftBackMotor.restoreFactoryDefaults();
-    leftFrontMotor.restoreFactoryDefaults();
+    double conversionFactor = Constants.gearRatio * Constants.wheelDiameterInInches * Constants.inchesToMetersFactor * Math.PI;
 
-    IdleMode mode = IdleMode.kBrake; // brakes
-    rightBackMotor.setIdleMode(mode);
-    rightFrontMotor.setIdleMode(mode);
-    leftBackMotor.setIdleMode(mode);
-    leftFrontMotor.setIdleMode(mode);
+    for (Motor motor : Motor.values()) {
+      CANSparkMax canSparkMax = this.motors.get(motor);
+      RelativeEncoder encoder = canSparkMax.getEncoder();
+      this.encoders.put(motor, encoder);
+      canSparkMax.restoreFactoryDefaults();
+      canSparkMax.setIdleMode(Constants.defaultIdleMode);
+      canSparkMax.setOpenLoopRampRate(Constants.rampRate);
+      canSparkMax.setSmartCurrentLimit(Constants.currentLimit);
+      encoder.setPositionConversionFactor(conversionFactor);
+      canSparkMax.burnFlash();
+    }
 
-    double openLoopRampRate = 0.2; // 0.6 sec to full velocity
-    rightBackMotor.setOpenLoopRampRate(openLoopRampRate);
-    rightFrontMotor.setOpenLoopRampRate(openLoopRampRate);
-    leftBackMotor.setOpenLoopRampRate(openLoopRampRate);
-    leftFrontMotor.setOpenLoopRampRate(openLoopRampRate);
+    this.motors.get(Motor.RIGHT_BACK).follow(this.motors.get(Motor.RIGHT_FRONT));
+    this.motors.get(Motor.LEFT_BACK).follow(this.motors.get(Motor.LEFT_FRONT));
 
-    int currentLimit = 75; // maxmium amps
-    rightBackMotor.setSmartCurrentLimit(currentLimit);
-    rightFrontMotor.setSmartCurrentLimit(currentLimit);
-    leftBackMotor.setSmartCurrentLimit(currentLimit);
-    leftFrontMotor.setSmartCurrentLimit(currentLimit);
+    this.diffDrive = new DifferentialDrive(this.motors.get(Motor.RIGHT_FRONT), this.motors.get(Motor.LEFT_FRONT));
+    this.diffDrive.setDeadband(Constants.deadband);
+    this.motors.get(Motor.LEFT_FRONT).setInverted(true);
 
-    rightBackMotor.follow(rightFrontMotor, false); // false means not inverted, and true means inverted
-    leftBackMotor.follow(leftFrontMotor, false);
-
-    // Encoder creation
-    leftBackEncoder = rightFrontMotor.getEncoder();
-    leftFrontEncoder = rightBackMotor.getEncoder();
-    rightBackEncoder = leftFrontMotor.getEncoder();
-    rightFrontEncoder = leftBackMotor.getEncoder();
-
-    countsPerMotorRevolution = leftBackEncoder.getCountsPerRevolution();
-    // this choice of encoder is arbitrary -- any other encoder would work just as
-    // well
-
-    var conversionFactor = Constants.gearRatio * Constants.wheelDiameterInInches * Constants.inchesToMetersFactor
-        * Math.PI;
-    leftBackEncoder.setPositionConversionFactor(conversionFactor);//Need to burn to SPARKMax
-    leftFrontEncoder.setPositionConversionFactor(conversionFactor);
-    rightFrontEncoder.setPositionConversionFactor(conversionFactor);
-    rightBackEncoder.setPositionConversionFactor(conversionFactor);
-
-    leftBackMotor.burnFlash();
-    leftFrontMotor.burnFlash();
-    rightFrontMotor.burnFlash();
-    rightBackMotor.burnFlash();
-
-    gyro = new AHRS(SerialPort.Port.kMXP);
-
-    diffDrive = new DifferentialDrive(rightFrontMotor, leftFrontMotor);
-    diffDrive.setDeadband(0.05); // minmal signal
-    leftFrontMotor.setInverted(true);
-    resetEncoders();
-
-    odometry = new DifferentialDriveOdometry(gyro.getRotation2d());
-
-    // NetworkTable instantiation
-    instance = NetworkTableInstance.getDefault();
-    table = instance.getTable("/SmartDashboard");
+    this.gyro = new AHRS(SerialPort.Port.kMXP);
+    this.odometry = new DifferentialDriveOdometry(this.gyro.getRotation2d());
 
     // Start Sim components if in the matrix
     if (RobotBase.isSimulation()) {
       initSim();
     }
+  }
 
-    // ShuffleboardTab tab = Shuffleboard.getTab("Smart Dashboard");
+  public void setOpenLoopRampRate(double openLoopRampRate) {
+    for (Motor motor : Motor.values()) {
+      this.motors.get(motor).setOpenLoopRampRate(openLoopRampRate);
+    }
+  }
+
+  public void setIdleMode(IdleMode mode) {
+    for (Motor motor : Motor.values()) {
+      this.motors.get(motor).setIdleMode(mode);
+    }
+  }
+
+  public Pose2d getPose() {
+    if (RobotBase.isSimulation()) {
+      return m_drivetrainSimulator.getPose();
+    } else {
+      return this.odometry.getPoseMeters();
+    }
+  }
+
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(
+      this.encoders.get(Motor.LEFT_BACK).getVelocity(), 
+      this.encoders.get(Motor.RIGHT_BACK).getVelocity()
+    );
+  }
+
+  public double getHeading() {
+    return this.gyro.getRotation2d().getDegrees();
+  }
+
+  /** Resets the drive encoders to currently read a position of 0. */
+  public void resetEncoders() {
+    for (Motor motor : Motor.values()) {
+      this.encoders.get(motor).setPosition(0);
+    }
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    this.resetEncoders();
+    this.odometry.resetPosition(pose, this.gyro.getRotation2d());
+  }
+
+  /**
+   * Controls the left and right sides of the drive directly with voltages.
+   *
+   * @param leftVolts  the commanded left output
+   * @param rightVolts the commanded right output
+   */
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
+    this.motors.get(Motor.LEFT_FRONT).setVoltage(leftVolts);
+    this.motors.get(Motor.RIGHT_FRONT).setVoltage(rightVolts);
+    this.diffDrive.feed();
+  }
+  
+  public void tankDriveSet(double leftSpeed, double rightSpeed) {
+    this.motors.get(Motor.LEFT_FRONT).set(leftSpeed);
+    this.motors.get(Motor.RIGHT_FRONT).set(rightSpeed);
+  }
+
+  public CANSparkMax getMotor(Motor motor) {
+    return this.motors.get(motor);
+  }
+
+  public RelativeEncoder getEncoder(Motor motor) {
+    return this.encoders.get(motor);
+  }
+
+  public void motorDrive(Motor motor, double speed) {
+    this.getMotor(motor).set(speed);
+  }
+
+  public void setEncoderPos(Motor motor, double position) {
+    this.getEncoder(motor).setPosition(position);
+  }
+
+  public double getEncoderPos(Motor motor) {
+    return this.getEncoder(motor).getPosition();
+  }
+
+  public void curvatureInput(double speed, double rotation, boolean allowTurnInPlace) {
+    this.diffDrive.curvatureDrive(speed, rotation, allowTurnInPlace);
+  }
+
+  public double getRPM(Motor motor) {
+    return this.getEncoder(motor).getVelocity() * Constants.gearRatio;
+  }
+
+  @Override
+  public void periodic() {
+    this.odometry.update(
+      this.gyro.getRotation2d(), 
+      this.getDistance(this.getEncoder(Motor.LEFT_BACK)), 
+      this.getDistance(this.getEncoder(Motor.RIGHT_BACK))
+    );
+  }
+
+  protected double getDistance(RelativeEncoder enc) {//TODO: This is the bug getPositionConversionFactor
+    return enc.getPosition();
+  }
+
+  public double getDrawnCurrentAmps(){
+    if(RobotBase.isSimulation()){
+      return this.m_drivetrainSimulator.getCurrentDrawAmps();
+    }
+    return this.getMotor(Motor.LEFT_FRONT).getOutputCurrent() +
+    this.getMotor(Motor.LEFT_BACK).getOutputCurrent() +
+    this.getMotor(Motor.RIGHT_FRONT).getOutputCurrent() + 
+    this.getMotor(Motor.RIGHT_BACK).getOutputCurrent();
   }
 
   private void initSim() {
@@ -139,143 +211,18 @@ public class Drivetrain extends SubsystemBase {
         Units.inchesToMeters(Constants.wheelDiameterInInches / 2), null);
 
     // Setup Leader Motors
-    this.leftencsim = RevEncoderSimWrapper.create(this.leftFrontMotor);
-    this.rightencsim = RevEncoderSimWrapper.create(this.rightFrontMotor);
+    this.leftencsim = RevEncoderSimWrapper.create(this.motors.get(Motor.LEFT_FRONT));
+    this.rightencsim = RevEncoderSimWrapper.create(this.motors.get(Motor.RIGHT_FRONT));
 
     // Sim Motors
     simGryo = new NavxWrapper();
   }
 
-  public double getOpenLoopRampRate() {
-    return openLoopRampRate;
-  }
-
-  public void setOpenLoopRampRate(double oLRR) {
-    openLoopRampRate = oLRR; // 0.6 sec to full velocity
-    rightBackMotor.setOpenLoopRampRate(openLoopRampRate);
-    rightFrontMotor.setOpenLoopRampRate(openLoopRampRate);
-    leftBackMotor.setOpenLoopRampRate(openLoopRampRate);
-    leftFrontMotor.setOpenLoopRampRate(openLoopRampRate);
-  }
-
-  public void setMotorMode(IdleMode mode) {
-    rightBackMotor.setIdleMode(mode);
-    rightFrontMotor.setIdleMode(mode);
-    leftBackMotor.setIdleMode(mode);
-    leftFrontMotor.setIdleMode(mode);
-  }
-
-  public Pose2d getPose() {
-    if (RobotBase.isSimulation()) {
-      return m_drivetrainSimulator.getPose();
-    } else {
-      return odometry.getPoseMeters();
-    }
-
-  }
-
-  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(leftFrontEncoder.getVelocity(), rightBackEncoder.getVelocity());
-  }
-
-  public double getHeading() {
-    return gyro.getRotation2d().getDegrees();
-  }
-
-  /** Resets the drive encoders to currently read a position of 0. */
-  public void resetEncoders() {
-    leftFrontEncoder.setPosition(0);
-    rightFrontEncoder.setPosition(0);
-    leftBackEncoder.setPosition(0);
-    rightBackEncoder.setPosition(0);
-  }
-
-  public void resetOdometry(Pose2d pose) {
-    resetEncoders();
-    odometry.resetPosition(pose, gyro.getRotation2d());
-  }
-
-  /**
-   * Controls the left and right sides of the drive directly with voltages.
-   *
-   * @param leftVolts  the commanded left output
-   * @param rightVolts the commanded right output
-   */
-  public void tankDriveVolts(double leftVolts, double rightVolts) {
-    leftFrontMotor.setVoltage(leftVolts);
-    rightFrontMotor.setVoltage(rightVolts);
-    diffDrive.feed();
-  }
-  public void tankDriveSet(double leftSpeed, double rightSpeed) {
-    leftFrontMotor.set(leftSpeed);
-    rightFrontMotor.set(rightSpeed);
-  }
-
-  public CANSparkMax getMotor(int idx) {
-    idx = (idx - 1) % 4 + 1;
-    switch (idx) {
-      case 1:
-        return rightBackMotor;
-      case 2:
-        return rightFrontMotor;
-      case 3:
-        return leftBackMotor;
-    }
-    return leftFrontMotor;
-  }
-
-  public RelativeEncoder getEncoder(int idx) {
-    idx = (idx - 1) % 4 + 1;
-    switch (idx) {
-      case 1:
-        return leftFrontEncoder;
-      case 2:
-        return leftBackEncoder;
-      case 3:
-        return rightFrontEncoder;
-    }
-    return rightBackEncoder;
-  }
-
-  public void motorDrive(int idx, double s) {
-    this.getMotor((idx - 1) % 4 + 1).set(s);
-  }
-  public void setEncoderPos(int idx, double p) {
-    this.getEncoder((idx - 1) % 4 + 1).setPosition(p);
-  }
-  public double getEncoderPos(int idx) {
-    return this.getEncoder((idx - 1) % 4 + 1).getPosition();
-  }
-
-  public void curvatureInput(double speed, double rotation, boolean isCurvatureDrive) {
-    diffDrive.curvatureDrive(speed, rotation, isCurvatureDrive);
-  }
-
-  public double getRPM(int idx) {
-    idx = (idx - 1) % 4 + 1;
-    return getEncoder(idx).getVelocity() * Constants.gearRatio;
-  }
-
-  @Override
-  public void periodic() {
-    odometry.update(gyro.getRotation2d(), getDistance(leftBackEncoder), getDistance(rightBackEncoder));
-  }
-
-  protected double getDistance(RelativeEncoder enc) {//TODO: This is the bug getPositionConversionFactor
-    return enc.getPosition();
-  }
-  public double getDrawnCurrentAmps(){
-    if(RobotBase.isSimulation()){
-      return this.m_drivetrainSimulator.getCurrentDrawAmps();
-    }
-    return this.leftFrontMotor.getOutputCurrent() + this.leftBackMotor.getOutputCurrent() + this.rightFrontMotor.getOutputCurrent() + this.rightBackMotor.getOutputCurrent();
-  }
-
   @Override
   public void simulationPeriodic() {
     m_drivetrainSimulator.setInputs(
-        this.leftFrontMotor.get()*RobotController.getInputVoltage(),
-        this.rightFrontMotor.get()*RobotController.getInputVoltage());
+        this.getMotor(Motor.LEFT_FRONT).get()*RobotController.getInputVoltage(),
+        this.getMotor(Motor.RIGHT_FRONT).get()*RobotController.getInputVoltage());
     m_drivetrainSimulator.update(Constants.kSimUpdateTime);
     this.leftencsim.setDistance(m_drivetrainSimulator.getLeftPositionMeters());
     this.leftencsim.setVelocity(m_drivetrainSimulator.getLeftVelocityMetersPerSecond());

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Presets;
+import frc.robot.Drive.Drivetrain.Motor;
 
 public class DriveWithJoystick extends CommandBase {
   protected Drivetrain drivetrain;
@@ -70,8 +71,6 @@ public class DriveWithJoystick extends CommandBase {
 
     double rotation = 0; // Constants.rotation = -0.5
     double speed = 0.0;
-    openLoopRampRateConstant = drivetrain.getOpenLoopRampRate();
-
     rotation = rotationConstant * rotationInput;
 
     if (rightTriggerInput > leftTriggerInput) {
@@ -83,15 +82,15 @@ public class DriveWithJoystick extends CommandBase {
     if (rightTriggerInput == 0 && leftTriggerInput == 0 &&
         rotationInput == 0 && driverXbox.getLeftBumper()) {
       if (isDriving) {
-        for (int i = 1; i < 5; i++)
-          drivetrain.setEncoderPos(i, 0);
+        for (Motor motor : Motor.values())
+          drivetrain.setEncoderPos(motor, 0);
         isDriving = false;
       }
-      for (int i = 1; i < 5; i++)
-        drivetrain.motorDrive(i, Constants.diffConstKeepPosition * drivetrain.getEncoderPos(i));
+      for (Motor motor : Motor.values())
+        drivetrain.motorDrive(motor, Constants.diffConstKeepPosition * drivetrain.getEncoderPos(motor));
     } else {
       isDriving = true;
-      drivetrain.curvatureInput(speed, rotation, !(driverXbox.getXButton()));
+      drivetrain.curvatureInput(speed, rotation, !driverXbox.getXButton());
     }
   }
 

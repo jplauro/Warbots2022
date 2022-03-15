@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
@@ -77,8 +79,8 @@ public final class Constants {
 
     // Drivetrain CAN IDs
     public static final int rightBackMotorID = 1;
-    public static final int leftBackMotorID = 3;
     public static final int rightFrontMotorID = 2;
+    public static final int leftBackMotorID = 3;
     public static final int leftFrontMotorID = 4;
 
     // shooter CAN IDs
@@ -95,6 +97,11 @@ public final class Constants {
     // loader CAN IDs
     public static final int intakeMotorID = 10;
     public static final int extendedIntakeMotorID = 11;
+
+    // drivetrain
+    public static final IdleMode defaultIdleMode = IdleMode.kBrake;
+    public static final int currentLimit = 75;
+    public static final double deadband = 0.05;
 
     //climber
     public static final int winchMinLimit = 0;
