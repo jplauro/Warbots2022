@@ -28,21 +28,18 @@ public class ClimberSubsystem extends SubsystemBase {
     protected final Solenoid bumperSolenoid;
     protected final DigitalInput climberSensor;
 
-    //Sim
-    private ElevatorSim climbeSim;
-    RevEncoderSimWrapper leftencsim,rightencsim;
     public ClimberSubsystem() {
 
         hangingSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 2);
         armsSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
-        bumperSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 3);
+        bumperSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 4);
         climberSensor = new DigitalInput(9);
 
     }
 
     @Override
     public void periodic() {
-        System.out.println(getClimberSensor());
+        // System.out.println(getClimberSensor());
     }
 
 

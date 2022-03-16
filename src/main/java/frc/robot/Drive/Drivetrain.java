@@ -47,12 +47,6 @@ public class Drivetrain extends SubsystemBase {
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry odometry;
 
-  // Sim Variables
-  private NavxWrapper simGryo;
-  private DifferentialDrivetrainSim m_drivetrainSimulator;
-  private RevEncoderSimWrapper leftencsim;
-  private RevEncoderSimWrapper rightencsim;
-
   public Drivetrain() {
     this.motors.putAll(Map.of(
       Motor.RIGHT_BACK, new SimableCANSparkMax(Constants.rightBackMotorID, MotorType.kBrushless),
@@ -91,6 +85,22 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
+  private void initSim() {
+    LinearSystem<N2, N2, N2> m_drivetrainSystem = LinearSystemId.identifyDrivetrainSystem(Constants.kSimDrivekVLinear,
+        Constants.ksimDrivekALinear, Constants.ksimDrivekVAngular,
+        Constants.kSimDrivekAAngular);
+    m_drivetrainSimulator = new DifferentialDrivetrainSim(
+        m_drivetrainSystem, DCMotor.getNEO(2), Constants.gearRatio, Constants.kTrackwidthMeters,
+        Units.inchesToMeters(Constants.wheelDiameterInInches / 2), null);
+
+    // Setup Leader Motors
+    this.leftencsim = RevEncoderSimWrapper.create(this.leftFrontMotor);
+    this.rightencsim = RevEncoderSimWrapper.create(this.rightFrontMotor);
+
+    // Sim Motors
+    simGryo = new NavxWrapper();
+  }
+
   public void setOpenLoopRampRate(double openLoopRampRate) {
     for (Motor motor : Motor.values()) {
       this.motors.get(motor).setOpenLoopRampRate(openLoopRampRate);
@@ -110,6 +120,7 @@ public class Drivetrain extends SubsystemBase {
       return this.odometry.getPoseMeters();
     }
   }
+
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(
@@ -131,7 +142,7 @@ public class Drivetrain extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     this.resetEncoders();
-    this.odometry.resetPosition(pose, this.gyro.getRotation2d());
+    this.odometry.resetPosition(pose, gyro.getRotation2d());
   }
 
   /**
@@ -145,7 +156,7 @@ public class Drivetrain extends SubsystemBase {
     this.motors.get(Motor.RIGHT_FRONT).setVoltage(rightVolts);
     this.diffDrive.feed();
   }
-  
+
   public void tankDriveSet(double leftSpeed, double rightSpeed) {
     this.motors.get(Motor.LEFT_FRONT).set(leftSpeed);
     this.motors.get(Motor.RIGHT_FRONT).set(rightSpeed);
@@ -191,7 +202,7 @@ public class Drivetrain extends SubsystemBase {
   protected double getDistance(RelativeEncoder enc) {//TODO: This is the bug getPositionConversionFactor
     return enc.getPosition();
   }
-
+  
   public double getDrawnCurrentAmps(){
     if(RobotBase.isSimulation()){
       return this.m_drivetrainSimulator.getCurrentDrawAmps();
@@ -201,21 +212,6 @@ public class Drivetrain extends SubsystemBase {
     this.getMotor(Motor.RIGHT_FRONT).getOutputCurrent() + 
     this.getMotor(Motor.RIGHT_BACK).getOutputCurrent();
   }
-
-  private void initSim() {
-    LinearSystem<N2, N2, N2> m_drivetrainSystem = LinearSystemId.identifyDrivetrainSystem(Constants.kSimDrivekVLinear,
-        Constants.ksimDrivekALinear, Constants.ksimDrivekVAngular,
-        Constants.kSimDrivekAAngular);
-    m_drivetrainSimulator = new DifferentialDrivetrainSim(
-        m_drivetrainSystem, DCMotor.getNEO(2), Constants.gearRatio, Constants.kTrackwidthMeters,
-        Units.inchesToMeters(Constants.wheelDiameterInInches / 2), null);
-
-    // Setup Leader Motors
-    this.leftencsim = RevEncoderSimWrapper.create(this.motors.get(Motor.LEFT_FRONT));
-    this.rightencsim = RevEncoderSimWrapper.create(this.motors.get(Motor.RIGHT_FRONT));
-
-    // Sim Motors
-    simGryo = new NavxWrapper();
   }
 
   @Override

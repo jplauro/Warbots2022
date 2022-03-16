@@ -27,6 +27,7 @@ public class AutoAimingAndSpinningUp extends CommandBase {
     protected double  currTicksGoal = 0;
     protected double inputOpRight = 0;
     protected int frames = 0;
+    protected double speed = 0;
     // shooter
     protected double rpm, minRPM = 0,
             currentSpeed = 0, acceleration, 
@@ -70,7 +71,12 @@ public class AutoAimingAndSpinningUp extends CommandBase {
         double x = entryX.getDouble(0.0);
         double y = entryY.getDouble(0.0);
         table.getEntry("ledMode").setNumber(3);
-        double speed = -(x-Constants.leftBias)*Constants.diffConstLS; // this is lazy susan turntable speed
+        if (isAuto) {
+            speed = -(x-Constants.leftBias)*Constants.diffConstAutoLS;
+        } else {
+            speed = -(x-Constants.leftBias)*Constants.diffConstLS;
+        }
+         // this is lazy susan turntable speed
         // boolean hasTarget = shooterSubsystem.limeLight.hasTarget(); //Sim:
         // double x = shooterSubsystem.limeLight.getOffsetX();
         // double y = shooterSubsystem.limeLight.getOffsetY();
@@ -106,6 +112,9 @@ public class AutoAimingAndSpinningUp extends CommandBase {
             && shooterSubsystem.getTargetRPM() < (1+Constants.shooterVibrationTolerance)*shooterSubsystem.getRPM()) {
             operatorXbox.setRumble(RumbleType.kLeftRumble, 0.5);
             operatorXbox.setRumble(RumbleType.kRightRumble, 0.5);
+        } else {
+            operatorXbox.setRumble(RumbleType.kLeftRumble, 0);
+            operatorXbox.setRumble(RumbleType.kRightRumble, 0);
         }
         
         System.out.println("ShooterSpeed: " + shooterSubsystem.getCurrentSpeed() + acceleration);
@@ -128,9 +137,10 @@ public class AutoAimingAndSpinningUp extends CommandBase {
         lazySusanMotor.set(0);
         shooterSubsystem.stopMotors();
         table.getEntry("ledMode").setNumber(1);
+        operatorXbox.setRumble(RumbleType.kLeftRumble, 0);
+        operatorXbox.setRumble(RumbleType.kRightRumble, 0);
     }
         
-
     @Override
     public boolean isFinished() {
         // if (frames > 750) {
