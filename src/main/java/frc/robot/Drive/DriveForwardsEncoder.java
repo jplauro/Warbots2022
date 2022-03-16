@@ -3,6 +3,7 @@ package frc.robot.Drive;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Drive.Drivetrain.Motor;
 
 public class DriveForwardsEncoder extends CommandBase {
     private Drivetrain drivetrain;
@@ -24,13 +25,13 @@ public class DriveForwardsEncoder extends CommandBase {
     }
     @Override
     public void end(boolean interrupted) {
-        this.drivetrain.setMotorMode(IdleMode.kBrake);
+        this.drivetrain.setIdleMode(IdleMode.kBrake);
     } 
 
     @Override
     public boolean isFinished() {//40 = 7ft
         // return frames > 60;
-        return drivetrain.getEncoderPos(2) > 20;
+        return drivetrain.getEncoderPos(Motor.RIGHT_FRONT) > 20;
     }
 }
 

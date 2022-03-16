@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Presets;
-import frc.robot.Drive.Drivetrain.Motor;
 
 public class DriveWithJoystick extends CommandBase {
   protected Drivetrain drivetrain;
@@ -79,8 +78,10 @@ public class DriveWithJoystick extends CommandBase {
     } else if (rightTriggerInput < leftTriggerInput) {
       speed = leftTriggerInput * -speedConstant;
     }
+
     drivetrain.curvatureInput(speed, rotation, leftTriggerInput == rightTriggerInput);
 }
+
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {

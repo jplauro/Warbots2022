@@ -85,22 +85,6 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
-  private void initSim() {
-    LinearSystem<N2, N2, N2> m_drivetrainSystem = LinearSystemId.identifyDrivetrainSystem(Constants.kSimDrivekVLinear,
-        Constants.ksimDrivekALinear, Constants.ksimDrivekVAngular,
-        Constants.kSimDrivekAAngular);
-    m_drivetrainSimulator = new DifferentialDrivetrainSim(
-        m_drivetrainSystem, DCMotor.getNEO(2), Constants.gearRatio, Constants.kTrackwidthMeters,
-        Units.inchesToMeters(Constants.wheelDiameterInInches / 2), null);
-
-    // Setup Leader Motors
-    this.leftencsim = RevEncoderSimWrapper.create(this.leftFrontMotor);
-    this.rightencsim = RevEncoderSimWrapper.create(this.rightFrontMotor);
-
-    // Sim Motors
-    simGryo = new NavxWrapper();
-  }
-
   public void setOpenLoopRampRate(double openLoopRampRate) {
     for (Motor motor : Motor.values()) {
       this.motors.get(motor).setOpenLoopRampRate(openLoopRampRate);
@@ -212,20 +196,46 @@ public class Drivetrain extends SubsystemBase {
     this.getMotor(Motor.RIGHT_FRONT).getOutputCurrent() + 
     this.getMotor(Motor.RIGHT_BACK).getOutputCurrent();
   }
+
+  /**
+   * Simulation Code
+   */
+  private NavxWrapper simGyro;
+  private DifferentialDrivetrainSim m_drivetrainSimulator;
+  private RevEncoderSimWrapper leftencsim;
+  private RevEncoderSimWrapper rightencsim;
+  private boolean simInit = false;
+
+  private void initSim() {
+    LinearSystem<N2, N2, N2> m_drivetrainSystem = LinearSystemId.identifyDrivetrainSystem(Constants.kSimDrivekVLinear,
+        Constants.ksimDrivekALinear, Constants.ksimDrivekVAngular,
+        Constants.kSimDrivekAAngular);
+    m_drivetrainSimulator = new DifferentialDrivetrainSim(
+        m_drivetrainSystem, DCMotor.getNEO(2), Constants.gearRatio, Constants.kTrackwidthMeters,
+        Units.inchesToMeters(Constants.wheelDiameterInInches / 2), null);
+
+    // Setup Leader Motors
+    this.leftencsim = RevEncoderSimWrapper.create(this.motors.get(Motor.LEFT_FRONT));
+    this.rightencsim = RevEncoderSimWrapper.create(this.motors.get(Motor.RIGHT_FRONT));
+
+    // Sim Motors
+    simGyro = new NavxWrapper();
   }
 
   @Override
   public void simulationPeriodic() {
+    if (!simInit) {
+      initSim();
+      simInit = true;
+    }
     m_drivetrainSimulator.setInputs(
-        this.getMotor(Motor.LEFT_FRONT).get()*RobotController.getInputVoltage(),
-        this.getMotor(Motor.RIGHT_FRONT).get()*RobotController.getInputVoltage());
+        this.motors.get(Motor.LEFT_FRONT).get() * RobotController.getInputVoltage(),
+        this.motors.get(Motor.RIGHT_FRONT).get() * RobotController.getInputVoltage());
     m_drivetrainSimulator.update(Constants.kSimUpdateTime);
     this.leftencsim.setDistance(m_drivetrainSimulator.getLeftPositionMeters());
     this.leftencsim.setVelocity(m_drivetrainSimulator.getLeftVelocityMetersPerSecond());
-
     this.rightencsim.setDistance(m_drivetrainSimulator.getRightPositionMeters());
     this.rightencsim.setVelocity(m_drivetrainSimulator.getRightVelocityMetersPerSecond());
-
-    simGryo.getYawGyro().setAngle(-m_drivetrainSimulator.getHeading().getDegrees()); // TODO add Gyo Vel support
+    this.simGyro.getYawGyro().setAngle(-m_drivetrainSimulator.getHeading().getDegrees()); // TODO add Gyro Vel support
   }
 }

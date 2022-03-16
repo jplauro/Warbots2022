@@ -23,7 +23,7 @@ public class DriveForwards extends CommandBase {
     }
     @Override
     public void end(boolean interrupted) {
-        this.drivetrain.setMotorMode(IdleMode.kBrake);
+        this.drivetrain.setIdleMode(IdleMode.kBrake);
     } 
 
     @Override

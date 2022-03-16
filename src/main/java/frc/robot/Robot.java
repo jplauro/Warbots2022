@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
     // TODO: move to initializer in robotContainer
     new LowerHooks(robotContainer.getClimberSubsystem()).schedule();
     robotContainer.getLazySusanSubsystem().getLazySusanEncoder().setPosition(0);
-    robotContainer.getDriveTrain().setMotorMode(IdleMode.kBrake);
+    robotContainer.getDriveTrain().setIdleMode(IdleMode.kBrake);
     robotContainer.getClimberMotorsSubsystem().getWinchMotor().getEncoder().setPosition(0);
   }
 
@@ -99,7 +99,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     IdleMode mode = IdleMode.kBrake;
-    robotContainer.getDriveTrain().setMotorMode(mode);
+    robotContainer.getDriveTrain().setIdleMode(mode);
     robotContainer.getShooterSubsystem().setSpeed(0);
     CommandScheduler.getInstance().cancelAll();
   }
