@@ -98,8 +98,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
-    IdleMode mode = IdleMode.kBrake;
-    robotContainer.getDriveTrain().setIdleMode(mode);
+    robotContainer.getDriveTrain().setIdleMode(IdleMode.kBrake);
     robotContainer.getShooterSubsystem().setSpeed(0);
     CommandScheduler.getInstance().cancelAll();
   }
