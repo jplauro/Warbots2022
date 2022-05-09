@@ -21,7 +21,7 @@ public class SetpointSpinUp extends CommandBase {
 
     @Override
     public void execute() {
-        shooterSubsystem.setTargetRPM(Constants.rpmMap.getInterpolated(offsetY));
+        shooterSubsystem.setTargetRPM(Constants.rpmMap.get(offsetY));
         ControlBoard.setOperatorRumble(getWithinTolerance());
     }
 

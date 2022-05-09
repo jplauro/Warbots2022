@@ -9,7 +9,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.I2C;
-import frc.robot.Util.InterpolatingDoubleMap;
+import frc.robot.Util.LinearInterpolationMap;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -135,9 +135,8 @@ public final class Constants {
     public static final int minColorSensorProximity = 100; // Increases with proximity
     public static final int frameCountUntilFloat = 50;
 
-    // TODO: Calculate the correct values for this map
     // This maps the LimeLight's Vertical Offset (tY) to RPM
-    public static final InterpolatingDoubleMap rpmMap = new InterpolatingDoubleMap() {{
+    public static final LinearInterpolationMap rpmMap = new LinearInterpolationMap() {{
         put(7.7, 2458.0);
         put(-0.4, 2682.0);
         put(-6.7, 2990.0);
@@ -145,7 +144,7 @@ public final class Constants {
         put(-16.38, 3663.0);
         put(-19.09, 3930.0);
         put(-20.39, 4302.0);
-        put(-22.13, 4575.0);//TODO: Out of range warning on the lights/consule
+        put(-22.13, 4575.0);
     }};
 
     // LazySusan
