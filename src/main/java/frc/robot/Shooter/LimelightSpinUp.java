@@ -3,10 +3,10 @@ package frc.robot.Shooter;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Controls.ControlBoard;
-import frc.robot.Util.LimeLight;
-import frc.robot.Util.RobotContainer;
-import frc.robot.Util.LimeLight.LedMode;
+import frc.robot.Util.Limelight;
+import frc.robot.Util.Limelight.LedMode;
 
 public class LimelightSpinUp extends CommandBase {
     protected ShooterSubsystem shooterSubsystem;
@@ -18,13 +18,13 @@ public class LimelightSpinUp extends CommandBase {
 
     @Override
     public void initialize() {
-        LimeLight.setLedMode(LedMode.ON);
+        Limelight.setLedMode(LedMode.ON);
     }
 
     @Override
     public void execute() {
-        LimeLight.setLedMode(LedMode.ON); // TODO: Less jank
-        double y = LimeLight.getTY();
+        Limelight.setLedMode(LedMode.ON); // TODO: Less jank
+        double y = Limelight.getTY();
         // double distance = ShooterMath.getDistanceInMeters(Constants.azimuthAngle1, y, Constants.limelightHeight, Constants.hubHeight);
         // double targetRPM = ShooterMath.metersToRPM(distance);
 
@@ -34,7 +34,7 @@ public class LimelightSpinUp extends CommandBase {
         
         // TODO: Use the below RPM value once the table is working
         double targetRPM = Constants.rpmMap.get(y);
-        if(LimeLight.hasTarget())
+        if(Limelight.hasTarget())
             this.shooterSubsystem.setTargetRPM(targetRPM+shooterSubsystem.getOffsetSpeed());//+100
         //ControlBoard.setOperatorLowFreqRumble(hasTargetAndInRange && this.getWithinTolerance());
     }
@@ -49,7 +49,7 @@ public class LimelightSpinUp extends CommandBase {
     @Override
     public void end(boolean interrupt) {
         this.shooterSubsystem.stopMotors();
-        LimeLight.setLedMode(LedMode.OFF);
+        Limelight.setLedMode(LedMode.OFF);
         // ControlBoard.setOperatorRumble(false);
     }
 }

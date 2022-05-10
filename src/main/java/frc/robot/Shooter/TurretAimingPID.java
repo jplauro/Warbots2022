@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.Util.LimeLight;
-import frc.robot.Util.LimeLight.LedMode;
+import frc.robot.Util.Limelight;
+import frc.robot.Util.Limelight.LedMode;
 
 public class TurretAimingPID extends CommandBase {
     private LazySusanSubsystem lazySusanSubsystem;
@@ -39,23 +39,23 @@ public class TurretAimingPID extends CommandBase {
     @Override
     public void initialize() {
         this.frames = 0;
-        LimeLight.setLedMode(LedMode.ON);
+        Limelight.setLedMode(LedMode.ON);
     }
 
     @Override
     public void execute() {
         this.frames++;
-        double x = LimeLight.getTX();
+        double x = Limelight.getTX();
         x += lazySusanSubsystem.getOffsetAngle();
         // SmartDashboard.putNumber("LimeLight Distance", distance);
-        SmartDashboard.putNumber("LimeLight TY", LimeLight.getTY()); // TODO: Remove debug data
+        SmartDashboard.putNumber("LimeLight TY", Limelight.getTY()); // TODO: Remove debug data
 
         // Don't track using the LimeLight if the turret is still turning in the opposite direction
         if (Math.abs(lazySusanSubsystem.getRawSetpoint() - lazySusanSubsystem.getRotationDegrees()) > 180) {
             return;
         }
 
-        if (LimeLight.hasTarget()) {
+        if (Limelight.hasTarget()) {
             if (this.lazySusanSubsystem.getIsGyroLocking()) {
                 lazySusanSubsystem.setTurretPosition(this.robotbase.get().getRotation().plus(lazySusanSubsystem.getRotation()).minus(Rotation2d.fromDegrees(x)));
             } else {
@@ -80,10 +80,10 @@ public class TurretAimingPID extends CommandBase {
     }
 
     public Pose2d calculateHubPosition(Pose2d robotPose) {
-        double distance = ShooterMath.getDistanceInMeters(Constants.azimuthAngle1, LimeLight.getTY(),
+        double distance = ShooterMath.getDistanceInMeters(Constants.azimuthAngle1, Limelight.getTY(),
                 Constants.limelightHeight, Constants.hubHeight);
         Pose2d hubPosition = robotPose
-                .transformBy(new Transform2d(new Translation2d(0, 0), Rotation2d.fromDegrees(-LimeLight.getTX())))
+                .transformBy(new Transform2d(new Translation2d(0, 0), Rotation2d.fromDegrees(-Limelight.getTX())))
                 .transformBy(
                         new Transform2d(new Translation2d(distance, 0), Rotation2d.fromDegrees(0)));
         this.robotFieldWidget.getObject("hub-target").setPose(hubPosition);
@@ -101,13 +101,13 @@ public class TurretAimingPID extends CommandBase {
 
     @Override
     public void end(boolean interrupt) {
-        LimeLight.setLedMode(LedMode.OFF);
+        Limelight.setLedMode(LedMode.OFF);
     }
 
     @Override
     public boolean isFinished() {
         if (endOnSuccessfulTracking && this.frames < this.maxFrames) {
-            return Math.abs(LimeLight.getTX()) < Constants.limeLightTolerance;
+            return Math.abs(Limelight.getTX()) < Constants.limeLightTolerance;
         }
         return this.maxFrames == -1 ? false : this.frames >= this.maxFrames;
     }

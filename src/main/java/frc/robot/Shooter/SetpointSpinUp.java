@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Controls.ControlBoard;
-import frc.robot.Util.LimeLight;
-import frc.robot.Util.LimeLight.LedMode;
+import frc.robot.Util.Limelight;
+import frc.robot.Util.Limelight.LedMode;
 
 public class SetpointSpinUp extends CommandBase {
     protected ShooterSubsystem shooterSubsystem;
@@ -40,7 +40,7 @@ public class SetpointSpinUp extends CommandBase {
     @Override
     public void end(boolean interrupt) {
         shooterSubsystem.setTargetRPM(0);
-        LimeLight.setLedMode(LedMode.OFF);
+        Limelight.setLedMode(LedMode.OFF);
         ControlBoard.setOperatorRumble(false);
     }
 }

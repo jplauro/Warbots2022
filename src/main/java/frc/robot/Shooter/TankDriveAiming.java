@@ -3,8 +3,8 @@ package frc.robot.Shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Drive.Drivetrain;
-import frc.robot.Util.LimeLight;
-import frc.robot.Util.LimeLight.LedMode;
+import frc.robot.Util.Limelight;
+import frc.robot.Util.Limelight.LedMode;
 
 public class TankDriveAiming extends CommandBase {
     protected Drivetrain drivetrain;
@@ -22,13 +22,13 @@ public class TankDriveAiming extends CommandBase {
     @Override
     public void initialize() {
         this.frames = 0;
-        LimeLight.setLedMode(LedMode.ON);
+        Limelight.setLedMode(LedMode.ON);
     }
 
     @Override
     public void execute() {
         this.frames++;
-        double x = LimeLight.getTX();
+        double x = Limelight.getTX();
         double speed = -(x-Constants.leftBias)*Constants.diffConstTankDriveAim;
         System.out.println("Speed: " + speed);
 
@@ -38,7 +38,7 @@ public class TankDriveAiming extends CommandBase {
     @Override
     public void end(boolean interrupt) {
         this.drivetrain.tankDriveSet(0, 0);
-        LimeLight.setLedMode(LedMode.OFF);
+        Limelight.setLedMode(LedMode.OFF);
     }
 
     @Override

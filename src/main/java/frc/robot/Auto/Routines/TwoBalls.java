@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.RobotContainer;
 import frc.robot.Auto.DriveBackwardDistance;
 import frc.robot.Auto.DriveForwardDistance;
 import frc.robot.Drive.Drivetrain;
@@ -17,9 +18,8 @@ import frc.robot.Shooter.LimelightSpinUp;
 import frc.robot.Shooter.ShooterSubsystem;
 import frc.robot.Shooter.TurretAimingPID;
 import frc.robot.Shooter.ZeroTurnTable;
-import frc.robot.Util.LimeLight;
-import frc.robot.Util.RobotContainer;
-import frc.robot.Util.LimeLight.LedMode;
+import frc.robot.Util.Limelight;
+import frc.robot.Util.Limelight.LedMode;
 
 public class TwoBalls extends SequentialCommandGroup {
   // All distances are in meters
@@ -64,7 +64,7 @@ public class TwoBalls extends SequentialCommandGroup {
       ),
       // new InstantCommand(intake::disableInnerIntakeMotor)
       // new SetpointSpinUp(shooterSubsystem, LimeLight.getTY()),
-      new InstantCommand(() -> LimeLight.setLedMode(LedMode.OFF))
+      new InstantCommand(() -> Limelight.setLedMode(LedMode.OFF))
     );
     } else {
       addCommands(
@@ -98,7 +98,7 @@ public class TwoBalls extends SequentialCommandGroup {
       ),
       // new InstantCommand(intake::disableInnerIntakeMotor)
       // new SetpointSpinUp(shooterSubsystem, LimeLight.getTY()),
-      new InstantCommand(() -> LimeLight.setLedMode(LedMode.OFF))
+      new InstantCommand(() -> Limelight.setLedMode(LedMode.OFF))
      );
     }
     

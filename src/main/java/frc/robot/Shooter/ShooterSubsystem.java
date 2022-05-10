@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Controls.ControlBoard;
-import frc.robot.Util.LimeLight;
+import frc.robot.Util.Limelight;
 import frc.robot.Util.sim.LimeLightPoseSim;
 import frc.robot.Util.sim.LimeLightSim;
 import frc.robot.Util.sim.RevEncoderSimWrapper;
@@ -86,7 +86,7 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        boolean hasTargetAndInRange = LimeLight.hasTarget() && Constants.rpmMap.isKeyInBounds(LimeLight.getTY());
+        boolean hasTargetAndInRange = Limelight.hasTarget() && Constants.rpmMap.isKeyInBounds(Limelight.getTY());
 
         SmartDashboard.putBoolean("Flywheel/TARGET", hasTargetAndInRange);
         ControlBoard.setOperatorHighFreqRumble(hasTargetAndInRange);

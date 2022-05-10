@@ -8,15 +8,13 @@ import java.util.stream.Collectors;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import frc.robot.Constants;
 
-public class LimeLight {
+public class Limelight {
     private static NetworkTable limelightTable;
     private static NetworkTableEntry txEntry; // Horizontal offset to target
     private static NetworkTableEntry tyEntry; // Vertical offset to target
     private static NetworkTableEntry tvEntry; // Whether a target is found
     private static NetworkTableEntry ledModeEntry; // The state of the front-facing lights
-    // private static NetworkTableEntry streamEntry; // The display mode of the camera
 
     public enum LedMode {
         OFF(1), ON(3);
@@ -46,9 +44,7 @@ public class LimeLight {
         tyEntry = limelightTable.getEntry("ty");
         tvEntry = limelightTable.getEntry("tv");
         ledModeEntry = limelightTable.getEntry("ledMode");
-        // streamEntry = limelightTable.getEntry("stream");
-        // streamEntry.setDouble(2); // Puts the LimeLight in secondary picture-in-picture mode
-        setLedMode(LedMode.OFF); // Ensure that the LimeLight starts in off mode
+        setLedMode(LedMode.OFF);
     }
 
     public static LedMode getLedMode() {
@@ -69,14 +65,5 @@ public class LimeLight {
 
     public static boolean hasTarget() {
         return tvEntry.getDouble(0) == 1;
-    }
-
-    // In meters
-    public static double getDistance() {
-        return (Constants.hubHeight-Constants.limelightHeight)/Math.tan(Math.toRadians(Constants.azimuthAngle1+getTY()));
-    }
-
-    public static boolean inRange() {
-        return getDistance() < Constants.maxShootingDistance;
     }
 }
