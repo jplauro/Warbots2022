@@ -11,30 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.I2C;
 import frc.robot.Util.LinearInterpolationMap;
 
-/**
- * The Constants class provides a convenient place for teams to hold robot-wide
- * numerical or boolean
- * constants. This class should not be used for any other purpose. All constants
- * should be declared
- * globally (i.e. public static). Do not put anything functional in this class.
- *
- * <p>
- * It is advised to statically import this class (or one of its inner classes)
- * wherever the
- * constants are needed, to reduce verbosity.
- */
 public final class Constants {
-    // These characterization values MUST be determined either experimentally or
-    // theoretically
-    // for *your* robot's drive.
-    // The Robot Characterization Toolsuite provides a convenient tool for obtaining
-    // these
-    // values for your robot.
-
-    // Main Bot Character
-    //
-    //
-    //
     public static final double ksVolts = 0.13271;// 0.16249 0.13271
     public static final double kvVoltSecondsPerMeter = 2.1525;// 3.2952 2.1525
     public static final double kaVoltSecondsSquaredPerMeter = 0.40778;// 0.30496 0.40778
@@ -54,23 +31,12 @@ public final class Constants {
     public static final double kRamseteZeta = 0.7;// 0.7
     // It seems that the meter value is three times what it should be.
 
-    public static final double wheelDiameterInInches = 6; // TODO: Be more clear on if this is A drive wheel or shooter
-                                                          // wheel
+    public static final double wheelDiameterInInches = 6; // TODO: Be more clear on if this is A drive wheel or shooter wheel
     public static final double inchesToMetersFactor = 0.0254; // TODO: remove use Units.inchestoMeter
     public static final double shooterGearRatio = 1;
     public static final double gearRatio = 0.12;
 
     public static final double motorRotationsPerTurntableRotation = 104.0;
-
-
-    // public static final double kEncoderDistancePerPulse = 0.0359;//0.00136
-    // //TODO: Not used Remove?
-
-    public static final double speedHigh = 0.85;
-    public static final double speedLow = 0.35;
-    public static final double rotationHigh = -0.60;
-    public static final double rotationLow = -0.30;
-    public static final double rampRate = 0.2;
 
     public static final double limelightHeight = 0.69; // based on last year's robot
     public static final double hubHeight = 2.7178;
@@ -78,12 +44,6 @@ public final class Constants {
     public static final double metersToFeet = 3.28084;
 
     public static final double lowPoweredShotRPM = 1200;
-
-    // Drivetrain CAN IDs
-    public static final int rightBackMotorID = 1;
-    public static final int rightFrontMotorID = 2;
-    public static final int leftBackMotorID = 3;
-    public static final int leftFrontMotorID = 4;
 
     // shooter CAN IDs
     public static final int leftShooterMotorID = 5;
@@ -99,11 +59,6 @@ public final class Constants {
     // loader CAN IDs
     public static final int intakeMotorID = 10;
     public static final int intakeArmsMotorID = 11;
-
-    // Drivetrain
-    public static final IdleMode idleMode = IdleMode.kBrake;
-    public static final int currentLimit = 75;
-    public static final double deadband = 0.05;
 
     // Climber
     public static final double winchMinLimit = 0;

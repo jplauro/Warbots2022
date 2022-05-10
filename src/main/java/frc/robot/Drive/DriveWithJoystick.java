@@ -3,53 +3,41 @@ package frc.robot.Drive;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.Controls.ControlConstants;
 
 public class DriveWithJoystick extends CommandBase {
-    protected Drivetrain drivetrain;
-    protected XboxController driverXbox;
-    protected XboxController operatorXbox;
-    protected double speedConstant = Constants.speedHigh;
-    protected double rotationConstant = Constants.rotationHigh;
-    protected double openLoopRampRateConstant = Constants.rampRate;
-    protected boolean isDriving = false;
+    private Drivetrain drivetrain;
+    private XboxController driverXbox;
+    private double speedConstant = DriveConstants.SPEED_HIGH;
+    private double rotationConstant = DriveConstants.ROTATION_HIGH;
+    private double openLoopRampRateConstant = DriveConstants.RAMP_RATE;
 
-    public DriveWithJoystick(Drivetrain drivetrain, XboxController driverXbox, XboxController operatorXbox) {
-        addRequirements(drivetrain);
+    public DriveWithJoystick(Drivetrain drivetrain, XboxController driverXbox) {
         this.drivetrain = drivetrain;
         this.driverXbox = driverXbox;
-        this.operatorXbox = operatorXbox;
+        addRequirements(this.drivetrain);
 
-        SmartDashboard.putNumber("DriveWithJoystick/speed", speedConstant);
-        SmartDashboard.putNumber("DriveWithJoystick/rotation", rotationConstant);
-        SmartDashboard.putNumber("DriveWithJoystick/openloopramprate", openLoopRampRateConstant);
-        // drivetrain.setAllOpenLoopRampRates(openLoopRampRateConstant);
+        SmartDashboard.putNumber("DriveWithJoystick/speed", this.speedConstant);
+        SmartDashboard.putNumber("DriveWithJoystick/rotation", this.rotationConstant);
+        SmartDashboard.putNumber("DriveWithJoystick/openloopramprate", this.openLoopRampRateConstant);
     }
 
     @Override
     public void execute() {
-        this.speedConstant = Constants.speedHigh;
-        this.rotationConstant = Constants.rotationHigh;
-
         // Xbox Controller Input
-        double rightTriggerInput = Math.pow(driverXbox.getRightTriggerAxis(), 2); // Forwards
-        double leftTriggerInput = Math.pow(driverXbox.getLeftTriggerAxis(), 2); // Backwards
-        double rotationInput = Math.pow(driverXbox.getLeftX(), ControlConstants.SQUARE_FACTOR);
+        int power = ControlConstants.SQUARE_INPUTS ? 2 : 1;
+        double rightTriggerInput = Math.pow(this.driverXbox.getRightTriggerAxis(), power); // Forwards
+        double leftTriggerInput = Math.pow(this.driverXbox.getLeftTriggerAxis(), power); // Backwards
+        double rotationInput = Math.pow(this.driverXbox.getLeftX(), power);
 
-        // Only apply the original sign if the factor is even
-        if (ControlConstants.SQUARE_FACTOR % 2 == 0)
-            rotationInput *= Math.signum(driverXbox.getLeftX());
-            
+        // Only apply the original sign if the power is even
+        if (power % 2 == 0)
+            rotationInput *= Math.signum(this.driverXbox.getLeftX());
+
         double direction = rightTriggerInput > leftTriggerInput ? rightTriggerInput : -leftTriggerInput;
-        double speed = direction * speedConstant;
-        double rotation = rotationConstant * rotationInput;
-        
-        drivetrain.curvatureInput(speed, rotation, true); // Always enable turning in place
-    }
+        double speed = direction * this.speedConstant;
+        double rotation = rotationInput * this.rotationConstant;
 
-    @Override
-    public boolean isFinished() {
-        return false;
+        this.drivetrain.curvatureInput(speed, rotation, ControlConstants.TURN_IN_PLACE);
     }
 }

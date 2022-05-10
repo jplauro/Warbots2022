@@ -223,8 +223,7 @@ public class RobotContainer {
     }
 
     public void setTeleopDrive() {
-        driveWithJoystick = new DriveWithJoystick(drivetrain, ControlBoard.getDriverController(),
-            ControlBoard.getOperatorController());
+        driveWithJoystick = new DriveWithJoystick(drivetrain, ControlBoard.getDriverController());
         drivetrain.setDefaultCommand(driveWithJoystick);
     }
 

@@ -25,124 +25,112 @@ import frc.robot.Util.sim.NavxWrapper;
 import frc.robot.Util.sim.RevEncoderSimWrapper;
 
 public class Drivetrain extends SubsystemBase {
-
     private SimableCANSparkMax frontLeftMotor, frontRightMotor, rearLeftMotor, rearRightMotor;
+    private SimableCANSparkMax[] motors;
     private DifferentialDrive drive;
     private AHRS navx;
     private RelativeEncoder leftFrontEncoder, rightFrontEncoder;
     private DifferentialDriveOdometry odometry;
 
-    // PUBLIC
     public Drivetrain() {
-        initMotors();
-        initDrive();
-        initSensors();
+        this.initMotors();
+        this.initDrive();
+        this.initSensors();
     }
 
-    public void curvatureInput(double speed, double rotation, boolean quickTurn) {
-        drive.curvatureDrive(speed, -rotation, quickTurn);
+    public void curvatureInput(double speed, double rotation, boolean turnInPlace) {
+        this.drive.curvatureDrive(speed, -rotation, turnInPlace);
     }
 
     public void setEncoderPos(double pos) {
-        frontLeftMotor.getEncoder().setPosition(pos);
-        frontRightMotor.getEncoder().setPosition(pos);
-        rearLeftMotor.getEncoder().setPosition(pos);
-        rearRightMotor.getEncoder().setPosition(pos);
-
+        for (SimableCANSparkMax motor : this.motors) {
+            motor.getEncoder().setPosition(pos);
+        }
     }
 
     public double getHeading() { // TODO: Remove Use Odom class
-        return navx.getAngle();
+        return this.navx.getAngle();
     }
 
     public void tankDriveSet(double leftSpeed, double rightSpeed) {
-        frontLeftMotor.set(leftSpeed);
-        frontRightMotor.set(rightSpeed);
-        // drive.tankDrive(leftSpeed, rightSpeed);
+        this.frontLeftMotor.set(leftSpeed);
+        this.frontRightMotor.set(rightSpeed);
     }
 
     public void arcadeDriveSet(double speed, double rotation) {
-        drive.arcadeDrive(speed, rotation);
+        this.drive.arcadeDrive(speed, rotation);
     }
 
     // average the two encoders for this later
     public double getLeftSpeed() { // TODO: Remove Use Odom class
-        return leftFrontEncoder.getVelocity();
+        return this.leftFrontEncoder.getVelocity();
     }
 
     public double getLeftPosition() {// TODO: Remove Use Odom class
-        return leftFrontEncoder.getPosition();
+        return this.leftFrontEncoder.getPosition();
     }
 
     public double getRightSpeed() {//TODO: Remove Use Odom class
-    return rightFrontEncoder.getVelocity();
+        return this.rightFrontEncoder.getVelocity();
     }
 
     public double getRightPosition() {//TODO: Remove Use Odom class
-    return rightFrontEncoder.getPosition();
+        return this.rightFrontEncoder.getPosition();
     }
 
     public void setBrake(boolean brake) {
-        IdleMode mode;
-        if (brake) {
-            mode = IdleMode.kBrake;
-        } else {
-            mode = IdleMode.kCoast;
+        IdleMode mode = brake ? IdleMode.kBrake : IdleMode.kCoast;
+        for (SimableCANSparkMax motor : this.motors) {
+            motor.setIdleMode(mode);
         }
-
-        frontRightMotor.setIdleMode(mode);
-        frontLeftMotor.setIdleMode(mode);
-        rearRightMotor.setIdleMode(mode);
-        rearLeftMotor.setIdleMode(mode);
-
     }
 
     @Override
     public void periodic() {
-        odometry.update(navx.getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
-        SmartDashboard.putNumber("Heading", navx.getYaw());
+        this.odometry.update(this.navx.getRotation2d(), this.leftFrontEncoder.getPosition(), this.rightFrontEncoder.getPosition());
+        SmartDashboard.putNumber("Heading", this.navx.getYaw());
     }
 
     public Pose2d getPose() {
-        return odometry.getPoseMeters();
+        return this.odometry.getPoseMeters();
     }
 
-    // PRIVATE
     private void initMotors() {
-        frontLeftMotor = new SimableCANSparkMax(DriveConstants.frontLeftMotorID, MotorType.kBrushless);
-        frontRightMotor = new SimableCANSparkMax(DriveConstants.frontRightMotorID, MotorType.kBrushless);
-        rearLeftMotor = new SimableCANSparkMax(DriveConstants.rearLeftMotorID, MotorType.kBrushless);
-        rearRightMotor = new SimableCANSparkMax(DriveConstants.rearRightMotorID, MotorType.kBrushless);
+        this.frontLeftMotor = new SimableCANSparkMax(DriveConstants.FRONT_LEFT_MOTOR_ID, MotorType.kBrushless);
+        this.frontRightMotor = new SimableCANSparkMax(DriveConstants.FRONT_RIGHT_MOTOR_ID, MotorType.kBrushless);
+        this.rearLeftMotor = new SimableCANSparkMax(DriveConstants.REAR_LEFT_MOTOR_ID, MotorType.kBrushless);
+        this.rearRightMotor = new SimableCANSparkMax(DriveConstants.REAR_RIGHT_MOTOR_ID, MotorType.kBrushless);
 
-        rearRightMotor.follow(frontRightMotor);
-        rearLeftMotor.follow(frontLeftMotor);
+        this.motors = new SimableCANSparkMax[] {
+            this.frontLeftMotor, this.frontRightMotor, this.rearLeftMotor, this.rearRightMotor
+        };
 
-        frontRightMotor.setInverted(false);
-        frontLeftMotor.setInverted(true);
+        this.rearRightMotor.follow(this.frontRightMotor);
+        this.rearLeftMotor.follow(this.frontLeftMotor);
 
-        int currentLimit = 60;
-        frontLeftMotor.setSmartCurrentLimit(currentLimit);
-        frontRightMotor.setSmartCurrentLimit(currentLimit);
-        rearLeftMotor.setSmartCurrentLimit(currentLimit);
-        rearRightMotor.setSmartCurrentLimit(currentLimit);
+        this.frontRightMotor.setInverted(false);
+        this.frontLeftMotor.setInverted(true);
 
-        frontRightMotor.setOpenLoopRampRate(DriveConstants.driveRampRate);
-        frontLeftMotor.setOpenLoopRampRate(DriveConstants.driveRampRate);
+        for (SimableCANSparkMax motor : this.motors) {
+            motor.setSmartCurrentLimit(DriveConstants.CURRENT_LIMIT);
+        }
 
-        setBrake(true);
+        this.frontRightMotor.setOpenLoopRampRate(DriveConstants.RAMP_RATE);
+        this.frontLeftMotor.setOpenLoopRampRate(DriveConstants.RAMP_RATE);
+
+        this.setBrake(DriveConstants.BRAKE_WHEN_IDLE);
     }
 
     private void initDrive() {
-        drive = new DifferentialDrive(frontLeftMotor, frontRightMotor);
-        drive.setMaxOutput(DriveConstants.driveTrainMaxSpeed);
+        this.drive = new DifferentialDrive(this.frontLeftMotor, this.frontRightMotor);
+        this.drive.setMaxOutput(DriveConstants.SPEED_MAX);
     }
 
     private void initSensors() {
-        navx = new AHRS(Port.kMXP);
-
-        leftFrontEncoder = frontLeftMotor.getEncoder();
-        rightFrontEncoder = frontRightMotor.getEncoder();
-        odometry = new DifferentialDriveOdometry(navx.getRotation2d());
+        this.navx = new AHRS(Port.kMXP);
+        this.leftFrontEncoder = this.frontLeftMotor.getEncoder();
+        this.rightFrontEncoder = this.frontRightMotor.getEncoder();
+        this.odometry = new DifferentialDriveOdometry(this.navx.getRotation2d());
     }
 
     public double getDrawnCurrentAmps() {
@@ -150,13 +138,13 @@ public class Drivetrain extends SubsystemBase {
             return this.m_drivetrainSimulator.getCurrentDrawAmps();
         }
         return this.frontLeftMotor.getOutputCurrent() + this.frontRightMotor.getOutputCurrent()
-                + this.rearLeftMotor.getOutputCurrent() + this.rearRightMotor.getOutputCurrent();
+            + this.rearLeftMotor.getOutputCurrent() + this.rearRightMotor.getOutputCurrent();
     }
 
     /**
      * Simulation Code
      */
-    private NavxWrapper simGryo;
+    private NavxWrapper simGyro;
     private DifferentialDrivetrainSim m_drivetrainSimulator;
     private RevEncoderSimWrapper leftencsim;
     private RevEncoderSimWrapper rightencsim;
@@ -167,7 +155,7 @@ public class Drivetrain extends SubsystemBase {
                 Constants.kSimDrivekVLinear,
                 Constants.ksimDrivekALinear, Constants.ksimDrivekVAngular,
                 Constants.kSimDrivekAAngular);
-        m_drivetrainSimulator = new DifferentialDrivetrainSim(
+        this.m_drivetrainSimulator = new DifferentialDrivetrainSim(
                 m_drivetrainSystem, DCMotor.getNEO(2), Constants.gearRatio, Constants.kTrackwidthMeters,
                 Units.inchesToMeters(Constants.wheelDiameterInInches / 2), null);
 
@@ -176,26 +164,25 @@ public class Drivetrain extends SubsystemBase {
         this.rightencsim = RevEncoderSimWrapper.create(this.frontRightMotor);
 
         // Sim Motors
-        simGryo = new NavxWrapper();
+        this.simGyro = new NavxWrapper();
     }
 
     @Override
     public void simulationPeriodic() {
-        if (!simInit) {
+        if (!this.simInit) {
             initSim();
-            simInit = true;
+            this.simInit = true;
         }
-        m_drivetrainSimulator.setInputs(
+        this.m_drivetrainSimulator.setInputs(
                 this.frontLeftMotor.get() * RobotController.getInputVoltage(),
                 this.frontRightMotor.get() * RobotController.getInputVoltage());
-        m_drivetrainSimulator.update(Constants.kSimUpdateTime);
-        this.leftencsim.setDistance(m_drivetrainSimulator.getLeftPositionMeters());
-        this.leftencsim.setVelocity(m_drivetrainSimulator.getLeftVelocityMetersPerSecond());
+                this.m_drivetrainSimulator.update(Constants.kSimUpdateTime);
+        this.leftencsim.setDistance(this.m_drivetrainSimulator.getLeftPositionMeters());
+        this.leftencsim.setVelocity(this.m_drivetrainSimulator.getLeftVelocityMetersPerSecond());
 
-        this.rightencsim.setDistance(m_drivetrainSimulator.getRightPositionMeters());
-        this.rightencsim.setVelocity(m_drivetrainSimulator.getRightVelocityMetersPerSecond());
+        this.rightencsim.setDistance(this.m_drivetrainSimulator.getRightPositionMeters());
+        this.rightencsim.setVelocity(this.m_drivetrainSimulator.getRightVelocityMetersPerSecond());
 
-        simGryo.getYawGyro().setAngle(-m_drivetrainSimulator.getHeading().getDegrees()); // TODO add Gyo Vel support
+        this.simGyro.getYawGyro().setAngle(-this.m_drivetrainSimulator.getHeading().getDegrees()); // TODO add Gyo Vel support
     }
-
 }

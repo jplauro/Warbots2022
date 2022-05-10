@@ -102,25 +102,4 @@ public class ControlBoard {
         double rumble = onOff ? Constants.driverRumbleHighFreq : 0;
         operator.setRumble(RumbleType.kRightRumble, rumble);
     }
-
-    // use these once drive command is converted
-    public static double driveSpeedControl(boolean squaredInput) {
-        double forward = driver.getRightTriggerAxis();
-        double reverse = driver.getLeftTriggerAxis();
-        double input = forward - reverse;
-        input = squaredInput ? squareInput(input) : input;
-        return input * ControlConstants.DRIVE_SPEED_PERCENT;
-    }
-
-    public static double driveRotationcontrol(boolean squaredInput) {
-        double input = driver.getRightX();
-        input = squaredInput ? squareInput(input) : input;
-        return input * ControlConstants.DRIVE_ROTATION_PERCENT;
-    }
-
-    private static double squareInput(double input) {
-        double negativePreserver = input > 0 ? 1 : -1;
-        double squaredInput = Math.pow(input, ControlConstants.SQUARE_FACTOR);
-        return negativePreserver * squaredInput;
-    }
 }
