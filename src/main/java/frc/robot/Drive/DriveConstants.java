@@ -6,6 +6,7 @@ public class DriveConstants {
     public static final int REAR_LEFT_MOTOR_ID = 3;
     public static final int REAR_RIGHT_MOTOR_ID = 1;
 
+    public static final double AUTO_SPEED = 0.5;
     public static final double SPEED_HIGH = 0.85;
     public static final double SPEED_LOW = 0.35;
     public static final double SPEED_MAX = 1;

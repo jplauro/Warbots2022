@@ -102,13 +102,13 @@ public class Robot extends TimedRobot {
         RoboRioSim.setVInVoltage(loadedVoltage);
 
         Pose2d robotPos = this.robotContainer.getDrivetrain().getPose();
-        this.robotContainer.robotFieldWidget.setRobotPose(robotPos);
+        this.robotContainer.getRobotField().setRobotPose(robotPos);
         Pose2d hubPos = new Pose2d(7.940, 4.08, new Rotation2d()); // Position of the hub
-        this.robotContainer.robotFieldWidget.getObject("hub").setPose(hubPos);
+        this.robotContainer.getRobotField().getObject("hub").setPose(hubPos);
         Pose2d turretPos = new Pose2d(robotPos.getTranslation(),
                 robotPos.getRotation().plus(this.robotContainer.getLazySusanSubsystem().getRotation()));
         // Turret position
-        this.robotContainer.robotFieldWidget.getObject("Turret").setPose(turretPos);
+        this.robotContainer.getRobotField().getObject("Turret").setPose(turretPos);
 
         this.robotContainer.getShooterSubsystem().possim.setPosition(turretPos);
         this.robotContainer.getShooterSubsystem().possim.update(Constants.kSimUpdateTime);

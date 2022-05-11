@@ -58,7 +58,7 @@ public class RobotContainer {
 
     TrajectorySelector trajectorySelector = new TrajectorySelector(
             Filesystem.getDeployDirectory().toPath().resolve("paths/"), true);
-    public Field2d robotFieldWidget = new Field2d(); // TODO: include Robot odometry
+    private Field2d robotFieldWidget = new Field2d(); // TODO: include Robot odometry
 
     public RobotContainer() {
 		ControlBoard.init();
@@ -235,5 +235,9 @@ public class RobotContainer {
 
     public CommandBase getSelectedAuto() {
         return this.autoSelector.getSelected();
+    }
+
+    public Field2d getRobotField() {
+        return this.robotFieldWidget;
     }
 }

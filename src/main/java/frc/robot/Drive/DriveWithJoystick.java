@@ -26,8 +26,8 @@ public class DriveWithJoystick extends CommandBase {
     public void execute() {
         // Xbox Controller Input
         int power = ControlConstants.SQUARE_INPUTS ? 2 : 1;
-        double rightTriggerInput = Math.pow(this.driverXbox.getRightTriggerAxis(), power); // Forwards
-        double leftTriggerInput = Math.pow(this.driverXbox.getLeftTriggerAxis(), power); // Backwards
+        double rightTriggerInput = Math.pow(this.driverXbox.getRightTriggerAxis(), power); // Forward
+        double leftTriggerInput = Math.pow(this.driverXbox.getLeftTriggerAxis(), power); // Backward
         double rotationInput = Math.pow(this.driverXbox.getLeftX(), power);
 
         // Only apply the original sign if the power is even

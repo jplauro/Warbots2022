@@ -9,21 +9,6 @@ public class DriveInDirection extends CommandBase {
     private final double targetFrames;
     private double frames;
 
-    public enum Direction {
-        FORWARDS(1), 
-        BACKWARDS(-1);
-
-        private final double direction;
-
-        private Direction(double direction) {
-            this.direction = direction;
-        }
-
-        private double get() {
-            return this.direction;
-        }
-    }
-
     public DriveInDirection(Drivetrain drivetrain, Direction direction, double speed, double targetFrames) {
         this.drivetrain = drivetrain;
         this.direction = direction.get();
@@ -33,9 +18,9 @@ public class DriveInDirection extends CommandBase {
     }
 
     public DriveInDirection(Drivetrain drivetrain, Direction direction) {
-        this(drivetrain, direction, 0.5, 60); //40 frames = 7ft
+        this(drivetrain, direction, 0.5, 60);
     }
-    
+
     @Override
     public void initialize() {
         this.frames = 0;
