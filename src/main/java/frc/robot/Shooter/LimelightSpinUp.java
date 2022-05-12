@@ -1,10 +1,7 @@
 package frc.robot.Shooter;
 
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
-import frc.robot.Controls.ControlBoard;
 import frc.robot.Util.Limelight;
 import frc.robot.Util.Limelight.LedMode;
 

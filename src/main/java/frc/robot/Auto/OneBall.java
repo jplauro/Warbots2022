@@ -1,4 +1,4 @@
-package frc.robot.Auto.Routines;
+package frc.robot.Auto;
 
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;

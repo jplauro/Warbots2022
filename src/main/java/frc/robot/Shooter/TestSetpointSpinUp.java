@@ -4,20 +4,19 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TestSetpointSpinUp extends CommandBase {
     private ShooterSubsystem shooterSubsystem;
+
     public TestSetpointSpinUp(ShooterSubsystem shooterSubsystem) {
         this.shooterSubsystem = shooterSubsystem;
     }
 
     @Override
     public void execute() {
-        shooterSubsystem.setTargetRPM(shooterSubsystem.getTestRPM());
+        this.shooterSubsystem.setTargetRPM(this.shooterSubsystem.getTestRPM());
         System.out.println(shooterSubsystem.getTestRPM());
     }
 
     @Override
     public void end(boolean interrupted) {
-        shooterSubsystem.setTargetRPM(0);
+        this.shooterSubsystem.setTargetRPM(0);
     }
-
-
 }

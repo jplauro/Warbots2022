@@ -6,26 +6,22 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 
 public class MoveTurretToPos extends CommandBase {
-    LazySusanSubsystem lazySusanSubsystem;
-    private double x;
+    private LazySusanSubsystem lazySusanSubsystem;
+    private double x = Constants.stowedDegrees;
+
     public MoveTurretToPos(LazySusanSubsystem lazySusanSubsystem) {
-        addRequirements(lazySusanSubsystem);
         this.lazySusanSubsystem = lazySusanSubsystem;
-        x = Constants.stowedDegrees;
+        addRequirements(this.lazySusanSubsystem);
     }
 
     @Override
     public void initialize(){
-        SmartDashboard.putNumber("TestPos: ", x);
+        SmartDashboard.putNumber("TestPos: ", this.x);
     }
 
     @Override
     public void execute() {
-        x = SmartDashboard.getNumber("TestPos: ", Constants.stowedDegrees);
-        lazySusanSubsystem.setTurretPosition(Rotation2d.fromDegrees(x));
-        
+        this.x = SmartDashboard.getNumber("TestPos: ", this.x);
+        this.lazySusanSubsystem.setTurretPosition(Rotation2d.fromDegrees(this.x));   
     }
-
-    
-    
 }

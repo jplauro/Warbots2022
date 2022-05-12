@@ -44,7 +44,7 @@ public class FiringPins extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Color detected = this.detectedColor();
+        // Color detected = this.detectedColor();
         // System.out.println("(" + detected.red + ", " + detected.green + ", " + detected.blue + ")");
         // System.out.println(this.m_colorSensor.getProximity());
     }

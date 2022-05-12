@@ -46,7 +46,7 @@ public class TurretAimingPID extends CommandBase {
     public void execute() {
         this.frames++;
         double x = Limelight.getTX();
-        x += lazySusanSubsystem.getOffsetAngle();
+        x += lazySusanSubsystem.getOffsetDegrees();
         // SmartDashboard.putNumber("LimeLight Distance", distance);
         SmartDashboard.putNumber("LimeLight TY", Limelight.getTY()); // TODO: Remove debug data
 

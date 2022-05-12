@@ -3,18 +3,18 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import frc.robot.Auto.Routines.ExtakeBall;
-import frc.robot.Auto.Routines.OneBall;
-import frc.robot.Auto.Routines.Taxi;
-import frc.robot.Auto.Routines.TwoBalls;
+import frc.robot.Auto.ExtakeBall;
+import frc.robot.Auto.OneBall;
+import frc.robot.Auto.Taxi;
+import frc.robot.Auto.TwoBalls;
 import frc.robot.Climber.ClimberMotorsSubsystem;
 import frc.robot.Climber.ClimberSubsystem;
 import frc.robot.Climber.ExtendArmsAndStow;
@@ -32,14 +32,12 @@ import frc.robot.Shooter.ActivateFiringPins;
 import frc.robot.Shooter.FiringPins;
 import frc.robot.Shooter.LazySusanSubsystem;
 import frc.robot.Shooter.LimelightSpinUp;
-import frc.robot.Shooter.LowShotCommand;
 import frc.robot.Shooter.ManualAimingPID;
 import frc.robot.Shooter.ShooterSubsystem;
 import frc.robot.Shooter.TankDriveAiming;
 import frc.robot.Shooter.TurretAimingPID;
 import frc.robot.Shooter.ZeroTurnTable;
 import frc.robot.Util.Limelight;
-import frc.robot.Util.TrajectorySelector;
 import frc.robot.Util.LEDs.LEDIdleCommand;
 import frc.robot.Util.LEDs.LEDSubsystem;
 
@@ -56,8 +54,6 @@ public class RobotContainer {
     private DriveWithJoystick driveWithJoystick;
     private SendableChooser<CommandBase> autoSelector = new SendableChooser<CommandBase>();
 
-    TrajectorySelector trajectorySelector = new TrajectorySelector(
-            Filesystem.getDeployDirectory().toPath().resolve("paths/"), true);
     private Field2d robotFieldWidget = new Field2d(); // TODO: include Robot odometry
 
     public RobotContainer() {
@@ -99,27 +95,22 @@ public class RobotContainer {
         // TODO: here, now make a unified aiming/flywheel spinup command that we can use
         // for both auto and tele
 
-        ControlBoard.aimTurretTrigger.whileActiveOnce(
-            new ParallelCommandGroup(
+        ControlBoard.aimTurretTrigger.whileActiveOnce(new ParallelCommandGroup(
                 new LimelightSpinUp(this.getShooterSubsystem()),
                 new TurretAimingPID(this.getLazySusanSubsystem(), this.robotFieldWidget, this.drivetrain::getPose)
         ));
 
-        ControlBoard.tankDriveAimButton.whileActiveOnce(
-            new ParallelCommandGroup(
+        ControlBoard.tankDriveAimButton.whileActiveOnce(new ParallelCommandGroup(
                 new LimelightSpinUp(this.getShooterSubsystem()),
                 new TankDriveAiming(this.getDrivetrain())
         ));
 
-        ControlBoard.toggleGyroButton.whenPressed(
-            new InstantCommand(() -> {
-                this.getLazySusanSubsystem().setIsGyroLocking(!this.getLazySusanSubsystem().getIsGyroLocking());
-                this.getLazySusanSubsystem().setIsHubTracking(!this.getLazySusanSubsystem().getIsHubTracking());
-            }
-        ));
+        ControlBoard.toggleGyroButton.whenPressed(new InstantCommand(() -> {
+            this.getLazySusanSubsystem().setIsGyroLocking(!this.getLazySusanSubsystem().getIsGyroLocking());
+            this.getLazySusanSubsystem().setIsHubTracking(!this.getLazySusanSubsystem().getIsHubTracking());
+        }));
 
-        ControlBoard.fireTurretTrigger.whenActive(
-            new ParallelCommandGroup(  
+        ControlBoard.fireTurretTrigger.whenActive(new ParallelCommandGroup(  
             new ActivateFiringPins(getFiringPins(), getIntake()),
             new InstantCommand(this::logShot)
         ));
@@ -132,8 +123,13 @@ public class RobotContainer {
             new InstantCommand(() -> this.shooter.setIsBackwards(false))
         );
 
-        //operator
-        ControlBoard.lowShotButton.whileActiveOnce(new LowShotCommand(this.shooter));
+        ControlBoard.lowShotButton.whileActiveOnce(new FunctionalCommand(
+            () -> {}, // initialize()
+            () -> shooter.setTargetRPM(Constants.lowPoweredShotRPM), // execute()
+            (interrupted) -> shooter.stopMotors(),  // end()
+            () -> false // isFinished()
+        ));
+
         ControlBoard.intakeButton.whileActiveOnce(new SmartIntake(this.intake, this.firingPins));
         ControlBoard.outakeButton.whileActiveOnce(new OuttakeBall(this.intake));
     }
@@ -162,9 +158,7 @@ public class RobotContainer {
         this.turret.setDefaultCommand(new ManualAimingPID(this.turret, ControlBoard.getOperatorController()));
         this.ledSubsystem.setDefaultCommand(new LEDIdleCommand(this.ledSubsystem, this.intake, this.firingPins, this.turret));
         SmartDashboard.putData(robotFieldWidget);
-        SmartDashboard.putData(trajectorySelector);
         robotFieldWidget.getObject("Turret").setPose(new Pose2d());
-        trajectorySelector.linkField(robotFieldWidget);
     }
 
     /**
@@ -200,10 +194,6 @@ public class RobotContainer {
 
     public ShooterSubsystem getShooterSubsystem() {
         return this.shooter;
-    }
-
-    public TrajectorySelector getTrajectorySelector() {
-        return this.trajectorySelector;
     }
 
     public Intake getIntake() {
