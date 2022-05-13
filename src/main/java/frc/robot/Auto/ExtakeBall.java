@@ -6,11 +6,12 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Loader.Intake;
 
 public class ExtakeBall extends SequentialCommandGroup {
-    private final double extakeSpeed = 1;
+    private final double EXTAKE_SPEED = 1;
 
     public ExtakeBall(Intake intake) {
+        addRequirements(intake);
         addCommands(
-            new InstantCommand(() -> intake.setInnerIntakeMotor(extakeSpeed)),
+            new InstantCommand(() -> intake.setInnerIntakeMotor(this.EXTAKE_SPEED)),
             new WaitCommand(2),
             new InstantCommand(intake::disableInnerIntakeMotor)
         );

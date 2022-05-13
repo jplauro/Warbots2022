@@ -1,38 +1,22 @@
 package frc.robot.Climber;
 
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 
 public class RaiseAndGrab extends SequentialCommandGroup {
-    ClimberSubsystem climberSubsystem;
-    ClimberMotorsSubsystem climberMotorsSubsystem;
-    int raiseHooksFrames = 100;
+    private final int RAISE_HOOKS_FRAMES = 100;
+
     public RaiseAndGrab(ClimberMotorsSubsystem climberMotorsSubsystem, ClimberSubsystem climberSubsystem) {
-        this.climberSubsystem = climberSubsystem;
-        this.climberMotorsSubsystem = climberMotorsSubsystem;
-        addRequirements(this.climberMotorsSubsystem, this.climberSubsystem);
+        addRequirements(climberMotorsSubsystem, climberSubsystem);
         addCommands(
-            new ParallelCommandGroup(
-                new WinchRetract(climberMotorsSubsystem, Constants.winchMaxLimit/2.0),
+            parallel(
+                new WinchRetract(climberMotorsSubsystem, Constants.winchMaxLimit / 2.0),
                 new LowerPistons(climberSubsystem)),
-            // new ParallelCommandGroup(
-            //     new LowerHooks(climberSubsystem),
-            //     new WinchRetract(climberMotorsSubsystem, Constants.winchMaxLimit)
-            // ),
             new LowerHooks(climberSubsystem),
-            //new WinchRetract(climberMotorsSubsystem, Constants.winchMaxLimit),
             new SensorWinchRetract(climberMotorsSubsystem, climberSubsystem),
-            // new RaiseHooks(climberMotorsSubsystem, climberSubsystem);
-            new ParallelCommandGroup(
+            parallel(
                 new RaiseHooks(climberSubsystem, climberMotorsSubsystem),
-                //new SensorHooksUp(climberMotorsSubsystem, climberSubsystem),
-                new WinchHold(climberMotorsSubsystem, -5, this.raiseHooksFrames))
+                new WinchHold(climberMotorsSubsystem, -5, this.RAISE_HOOKS_FRAMES))
         );
     }
-
-    // @Override
-    // public boolean isFinished() {
-    //     return true;
-    // }
 }

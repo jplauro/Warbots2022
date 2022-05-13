@@ -22,12 +22,13 @@ import frc.robot.Util.Limelight.LedMode;
 
 public class TwoBalls extends SequentialCommandGroup {
     // All distances are in meters
-    private double FIRST_SHOT_DISTANCE = 0.5;
-    private double SECOND_SHOT_DISTANCE = 1.3;
-    private double TAXI_DISTANCE = 1.6;
+    private final double FIRST_SHOT_DISTANCE = 0.5;
+    private final double SECOND_SHOT_DISTANCE = 1.3;
+    private final double TAXI_DISTANCE = 1.6;
 
     public TwoBalls(RobotContainer robotContainer, Drivetrain drivetrain, LazySusanSubsystem lazySusanSubsystem,
     ShooterSubsystem shooterSubsystem, FiringPins firingPins, Intake intake) {
+        addRequirements(drivetrain, lazySusanSubsystem, shooterSubsystem, firingPins, intake);
         addCommands(
             parallel(
                 new LimelightSpinUp(shooterSubsystem),
@@ -36,7 +37,7 @@ public class TwoBalls extends SequentialCommandGroup {
                         // Only calibrate if not already calibrated
                         new ConditionalCommand(new ZeroTurnTable(lazySusanSubsystem),
                             new InstantCommand(), lazySusanSubsystem::getIsCal),
-                        new DriveDistance(drivetrain, FIRST_SHOT_DISTANCE, Direction.FORWARD)
+                        new DriveDistance(drivetrain, this.FIRST_SHOT_DISTANCE, Direction.FORWARD)
                     ),
                     new WaitCommand(2),
                     new TurretAimingPID(lazySusanSubsystem, robotContainer.getRobotField(), 
@@ -44,14 +45,14 @@ public class TwoBalls extends SequentialCommandGroup {
                     new ActivateFiringPins(firingPins, intake),
                     parallel(
                         new AutoLoad(intake),
-                        new DriveDistance(drivetrain, SECOND_SHOT_DISTANCE, Direction.FORWARD)
+                        new DriveDistance(drivetrain, this.SECOND_SHOT_DISTANCE, Direction.FORWARD)
                     ),
-                    new DriveDistance(drivetrain, SECOND_SHOT_DISTANCE, Direction.BACKWARD),
+                    new DriveDistance(drivetrain, this.SECOND_SHOT_DISTANCE, Direction.BACKWARD),
                     new TurretAimingPID(lazySusanSubsystem, robotContainer.getRobotField(), 
                         drivetrain::getPose, 100, false),
                     new ActivateFiringPins(firingPins, intake),
                     new WaitCommand(1),
-                    new DriveDistance(drivetrain, TAXI_DISTANCE, Direction.FORWARD)
+                    new DriveDistance(drivetrain, this.TAXI_DISTANCE, Direction.FORWARD)
                 )
             ),
             new InstantCommand(() -> Limelight.setLedMode(LedMode.OFF))

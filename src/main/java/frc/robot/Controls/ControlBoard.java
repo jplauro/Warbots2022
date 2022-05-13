@@ -17,7 +17,7 @@ public class ControlBoard {
     public static JoystickButton extendArmsButton,
             raiseArmsButton,
             climbSequenceButton,
-            lowerHooksButton,
+            toggleHooksButton,
             tankDriveAimButton,
             lowShotButton,
             winchHoldButton,
@@ -58,7 +58,7 @@ public class ControlBoard {
         fireTurretTrigger = new TriggerPressed(operator, Axis.kRightTrigger.value);
         lowShotButton = new JoystickButton(operator, Button.kRightBumper.value);
 
-        lowerHooksButton = new JoystickButton(operator, Button.kStart.value);
+        toggleHooksButton = new JoystickButton(operator, Button.kStart.value);
         toggleGyroButton = new JoystickButton(operator, Button.kBack.value);
 
         

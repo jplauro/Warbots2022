@@ -16,15 +16,16 @@ import frc.robot.Shooter.ShooterSubsystem;
 import frc.robot.Shooter.ZeroTurnTable;
 
 public class OneBall extends SequentialCommandGroup {
-    private double FIRST_SHOT_DISTANCE = 2; // In meters
+    private final double FIRST_SHOT_DISTANCE = 2; // In meters
 
     public OneBall(Drivetrain drivetrain, LazySusanSubsystem lazySusanSubsystem,
     ShooterSubsystem shooterSubsystem, FiringPins firingPins, Intake intake) {
+        addRequirements(drivetrain, lazySusanSubsystem, shooterSubsystem, firingPins, intake);
         addCommands(
             parallel(
                 new ConditionalCommand(new ZeroTurnTable(lazySusanSubsystem), 
                     new InstantCommand(), lazySusanSubsystem::getIsCal),
-                new DriveDistance(drivetrain, FIRST_SHOT_DISTANCE, Direction.FORWARD)
+                new DriveDistance(drivetrain, this.FIRST_SHOT_DISTANCE, Direction.FORWARD)
             ),
             new WaitCommand(1),
             new LimelightSpinUp(shooterSubsystem),

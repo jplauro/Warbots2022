@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Auto.ExtakeBall;
@@ -20,7 +19,6 @@ import frc.robot.Climber.ClimberSubsystem;
 import frc.robot.Climber.ExtendArmsAndStow;
 import frc.robot.Climber.RaiseAndGrab;
 import frc.robot.Climber.RaisePistons;
-import frc.robot.Climber.ToggleHooks;
 import frc.robot.Climber.WinchHold;
 import frc.robot.Controls.ControlBoard;
 import frc.robot.Drive.DriveWithJoystick;
@@ -83,21 +81,33 @@ public class RobotContainer {
 
     private void initControls() {
         // operator
-        ControlBoard.raiseArmsButton.whenPressed(new RaisePistons(this.climberHooks));
-        ControlBoard.extendArmsButton.whenPressed(new ExtendArmsAndStow(this.winch, this.climberHooks, this.intake));
-        ControlBoard.climbSequenceButton.whenPressed(new RaiseAndGrab(this.winch, this.climberHooks));
-        ControlBoard.lowerHooksButton.whenPressed(new ToggleHooks(this.climberHooks));
+        ControlBoard.raiseArmsButton.whenPressed(new RaisePistons(this.getClimberSubsystem()));
 
-        ControlBoard.winchHoldButton.whenPressed(
-            new WinchHold(this.winch, this.winch.getWinchPosition(), Constants.holdTime)
-        );
+        ControlBoard.climbSequenceButton.whenPressed(new RaiseAndGrab(
+            this.getClimberMotorsSubsystem(), this.getClimberSubsystem()
+        ));
+
+        ControlBoard.extendArmsButton.whenPressed(new ExtendArmsAndStow(
+            this.getClimberMotorsSubsystem(), this.getClimberSubsystem(), this.getIntake()
+        ));
+        
+        ControlBoard.toggleHooksButton.whenPressed(new InstantCommand(() ->
+            this.getClimberSubsystem().setHangingSolenoid(
+                !this.getClimberSubsystem().getHangingSolenoid().get()
+            )
+        ).withTimeout(0.3)); // Equivalent of 15 frames
+
+        ControlBoard.winchHoldButton.whenPressed(new WinchHold(
+            this.getClimberMotorsSubsystem(), 
+            this.getClimberMotorsSubsystem().getWinchPosition(), Constants.holdTime
+        ));
 
         // TODO: here, now make a unified aiming/flywheel spinup command that we can use
         // for both auto and tele
 
         ControlBoard.aimTurretTrigger.whileActiveOnce(new ParallelCommandGroup(
                 new LimelightSpinUp(this.getShooterSubsystem()),
-                new TurretAimingPID(this.getLazySusanSubsystem(), this.robotFieldWidget, this.drivetrain::getPose)
+                new TurretAimingPID(this.getLazySusanSubsystem(), this.getRobotField(), this.getDrivetrain()::getPose)
         ));
 
         ControlBoard.tankDriveAimButton.whileActiveOnce(new ParallelCommandGroup(
@@ -116,22 +126,20 @@ public class RobotContainer {
         ));
 
         ControlBoard.reverseShooterWheelsButton.whenPressed(
-            new InstantCommand(() -> this.shooter.setIsBackwards(true))
+            new InstantCommand(() -> this.getShooterSubsystem().setIsBackwards(true))
         );
 
         ControlBoard.reverseShooterWheelsButton.whenReleased(
-            new InstantCommand(() -> this.shooter.setIsBackwards(false))
+            new InstantCommand(() -> this.getShooterSubsystem().setIsBackwards(false))
         );
 
-        ControlBoard.lowShotButton.whileActiveOnce(new FunctionalCommand(
-            () -> {}, // initialize()
-            () -> shooter.setTargetRPM(Constants.lowPoweredShotRPM), // execute()
-            (interrupted) -> shooter.stopMotors(),  // end()
-            () -> false // isFinished()
-        ));
+        ControlBoard.lowShotButton.whileActiveOnce(
+            new InstantCommand(() -> this.getShooterSubsystem().setTargetRPM(Constants.lowPoweredShotRPM))
+            .andThen(new InstantCommand(this.getShooterSubsystem()::stopMotors))
+        );
 
-        ControlBoard.intakeButton.whileActiveOnce(new SmartIntake(this.intake, this.firingPins));
-        ControlBoard.outakeButton.whileActiveOnce(new OuttakeBall(this.intake));
+        ControlBoard.intakeButton.whileActiveOnce(new SmartIntake(this.getIntake(), this.getFiringPins()));
+        ControlBoard.outakeButton.whileActiveOnce(new OuttakeBall(this.getIntake()));
     }
 
     public void initAuto() {
