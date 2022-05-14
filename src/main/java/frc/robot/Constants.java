@@ -46,10 +46,6 @@ public final class Constants {
     // lazysusan CAN IDs
     public static final int lazySusanID = 9;
 
-    // loader CAN IDs
-    public static final int intakeMotorID = 10;
-    public static final int intakeArmsMotorID = 11;
-
     // Shooter
     public static final int minShooterRPM = 0;
     public static final int maxShooterRPM = 5500;
@@ -70,7 +66,6 @@ public final class Constants {
 
     public static final I2C.Port i2cColorSensorPort = I2C.Port.kMXP;
     public static final int minColorSensorProximity = 100; // Increases with proximity
-    public static final int frameCountUntilFloat = 50;
 
     // This maps the LimeLight's Vertical Offset (tY) to RPM
     public static final LinearInterpolationMap rpmMap = new LinearInterpolationMap() {{

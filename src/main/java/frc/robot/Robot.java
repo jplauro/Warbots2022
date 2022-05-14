@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
         }
 
         this.robotContainer.calibrateTurntable();
-        this.robotContainer.getIntake().disableInnerIntakeMotor();
+        this.robotContainer.getIntakeSubsystem().disableInnerIntakeMotor();
         this.robotContainer.getShooterSubsystem().setOffsetSpeed(0);
         this.robotContainer.getLazySusanSubsystem().setMotorMode(IdleMode.kBrake);
         this.robotContainer.setTeleopDrive();

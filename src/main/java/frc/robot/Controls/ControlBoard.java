@@ -8,24 +8,26 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 
 public class ControlBoard {
-
     // driver
-    public static JoystickButton intakeButton,
-            outakeButton;
+    public static JoystickButton 
+        intakeButton,
+        extakeButton;
 
     // operator
-    public static JoystickButton extendArmsButton,
-            raiseArmsButton,
-            climbSequenceButton,
-            toggleHooksButton,
-            tankDriveAimButton,
-            lowShotButton,
-            winchHoldButton,
-            toggleGyroButton,
-            reverseShooterWheelsButton;
+    public static JoystickButton 
+        extendArmsButton,
+        raiseArmsButton,
+        climbSequenceButton,
+        toggleHooksButton,
+        tankDriveAimButton,
+        lowShotButton,
+        winchHoldButton,
+        toggleGyroButton,
+        reverseShooterWheelsButton;
 
-    public static TriggerPressed aimTurretTrigger,
-            fireTurretTrigger;
+    public static TriggerPressed 
+        aimTurretTrigger,
+        fireTurretTrigger;
 
     // actual controllers
     private static XboxController driver, operator;
@@ -42,7 +44,7 @@ public class ControlBoard {
     private static void initDriverControls() {
         // driver controls
         intakeButton = new JoystickButton(driver, Button.kB.value);
-        outakeButton = new JoystickButton(driver, Button.kA.value);
+        extakeButton = new JoystickButton(driver, Button.kA.value);
         winchHoldButton = new JoystickButton(driver, Button.kX.value);
     }
 

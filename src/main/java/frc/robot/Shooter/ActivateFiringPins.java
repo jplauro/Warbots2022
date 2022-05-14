@@ -1,30 +1,30 @@
 package frc.robot.Shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Loader.Intake;
+import frc.robot.Intake.IntakeSubsystem;
 
 public class ActivateFiringPins extends CommandBase {
     private FiringPins firingPins;
-    private Intake intake;
+    private IntakeSubsystem intakeSubsystem;
     private int frames;
 
-    public ActivateFiringPins(FiringPins firingPins, Intake intake) {
-        addRequirements(intake);
+    public ActivateFiringPins(FiringPins firingPins, IntakeSubsystem intakeSubsystem) {
+        addRequirements(intakeSubsystem);
         this.firingPins = firingPins;
-        this.intake = intake;
+        this.intakeSubsystem = intakeSubsystem;
     }
 
     @Override
     public void initialize() {
         this.frames = 0;
         System.out.println("Ball was shot");
-        this.intake.enableInnerIntakeMotor();
+        this.intakeSubsystem.enableInnerIntakeMotor();
     }
 
     @Override
     public void execute() {
         if (++this.frames == 15) {
-            this.intake.disableInnerIntakeMotor();
+            this.intakeSubsystem.disableInnerIntakeMotor();
             this.firingPins.extendFiringPinsSolenoid();
         }
     }

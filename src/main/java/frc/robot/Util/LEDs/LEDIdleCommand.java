@@ -2,14 +2,14 @@ package frc.robot.Util.LEDs;
 
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Loader.Intake;
+import frc.robot.Intake.IntakeSubsystem;
 import frc.robot.Shooter.FiringPins;
 import frc.robot.Shooter.LazySusanSubsystem;
 import frc.robot.Util.LEDs.LEDSubsystem.LEDAnimation;
 import frc.robot.Util.LEDs.LEDSubsystem.LEDManager;
 
 public class LEDIdleCommand extends CommandBase {
-    protected Intake intake;
+    protected IntakeSubsystem intakeSubsystem;
     protected FiringPins firingPins;
     protected LazySusanSubsystem lazySusanSubsystem;
 
@@ -60,8 +60,9 @@ public class LEDIdleCommand extends CommandBase {
     //     noBallsAnim
     // );
 
-    public LEDIdleCommand(LEDSubsystem ledSubsystem, Intake intake, FiringPins firingPins, LazySusanSubsystem lazySusanSubsystem) {
-        this.intake = intake;
+    public LEDIdleCommand(LEDSubsystem ledSubsystem, IntakeSubsystem intakeSubsystem, 
+    FiringPins firingPins, LazySusanSubsystem lazySusanSubsystem) {
+        this.intakeSubsystem = intakeSubsystem;
         this.firingPins = firingPins;
         this.lazySusanSubsystem = lazySusanSubsystem;
         addRequirements(ledSubsystem);
@@ -70,7 +71,7 @@ public class LEDIdleCommand extends CommandBase {
     @Override
     public void execute() {
         // if(this.firingPins.hasColor()) { 
-        if(this.intake.getIntakeSwitch()) {
+        if(this.intakeSubsystem.getIntakeSwitch()) {
             this.oneBallAnim.step();
             // } else { // ONE ball
             //     this.oneBallAnim.step();

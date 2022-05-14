@@ -4,17 +4,17 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Climber.ControlPistons.PistonMotion;
 import frc.robot.Climber.ControlWinch.WinchMotion;
-import frc.robot.Loader.Intake;
+import frc.robot.Intake.IntakeSubsystem;
 
 public class RaiseAndGrab extends SequentialCommandGroup {
     private final int RAISE_HOOKS_FRAMES = 100;
 
     public RaiseAndGrab(WinchSubsystem winchSubsystem, 
-    ClimberSubsystem climberSubsystem, Intake intake) {
-        addRequirements(winchSubsystem, climberSubsystem, intake);
+    ClimberSubsystem climberSubsystem, IntakeSubsystem intakeSubsystem) {
+        addRequirements(winchSubsystem, climberSubsystem, intakeSubsystem);
         addCommands(
             parallel(
-                new ControlWinch(winchSubsystem, intake, 
+                new ControlWinch(winchSubsystem, intakeSubsystem, 
                 ClimberConstants.WINCH_LIMIT_MAX / 2, WinchMotion.RETRACT),
                 new ControlPistons(climberSubsystem, PistonMotion.LOWER)
             ),

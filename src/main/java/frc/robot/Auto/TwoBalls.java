@@ -8,8 +8,9 @@ import frc.robot.RobotContainer;
 import frc.robot.Drive.DriveDirection;
 import frc.robot.Drive.DriveDistance;
 import frc.robot.Drive.Drivetrain;
-import frc.robot.Loader.AutoLoad;
-import frc.robot.Loader.Intake;
+import frc.robot.Intake.ControlIntake;
+import frc.robot.Intake.IntakeSubsystem;
+import frc.robot.Intake.ControlIntake.IntakeMotion;
 import frc.robot.Shooter.ActivateFiringPins;
 import frc.robot.Shooter.FiringPins;
 import frc.robot.Shooter.LazySusanSubsystem;
@@ -25,10 +26,11 @@ public class TwoBalls extends SequentialCommandGroup {
     private final double FIRST_SHOT_DISTANCE = 0.5;
     private final double SECOND_SHOT_DISTANCE = 1.3;
     private final double TAXI_DISTANCE = 1.6;
+    private final int INTAKE_FRAMES = 100;
 
     public TwoBalls(RobotContainer robotContainer, Drivetrain drivetrain, LazySusanSubsystem lazySusanSubsystem,
-    ShooterSubsystem shooterSubsystem, FiringPins firingPins, Intake intake) {
-        addRequirements(drivetrain, lazySusanSubsystem, shooterSubsystem, firingPins, intake);
+    ShooterSubsystem shooterSubsystem, FiringPins firingPins, IntakeSubsystem intakeSubsystem) {
+        addRequirements(drivetrain, lazySusanSubsystem, shooterSubsystem, firingPins, intakeSubsystem);
         addCommands(
             parallel(
                 new LimelightSpinUp(shooterSubsystem),
@@ -42,15 +44,15 @@ public class TwoBalls extends SequentialCommandGroup {
                     new WaitCommand(2),
                     new TurretAimingPID(lazySusanSubsystem, robotContainer.getRobotField(), 
                         drivetrain::getPose, 100, false),
-                    new ActivateFiringPins(firingPins, intake),
+                    new ActivateFiringPins(firingPins, intakeSubsystem),
                     parallel(
-                        new AutoLoad(intake),
+                        new ControlIntake(intakeSubsystem, IntakeMotion.INTAKE, this.INTAKE_FRAMES),
                         new DriveDistance(drivetrain, this.SECOND_SHOT_DISTANCE, DriveDirection.FORWARD)
                     ),
                     new DriveDistance(drivetrain, this.SECOND_SHOT_DISTANCE, DriveDirection.BACKWARD),
                     new TurretAimingPID(lazySusanSubsystem, robotContainer.getRobotField(), 
                         drivetrain::getPose, 100, false),
-                    new ActivateFiringPins(firingPins, intake),
+                    new ActivateFiringPins(firingPins, intakeSubsystem),
                     new WaitCommand(1),
                     new DriveDistance(drivetrain, this.TAXI_DISTANCE, DriveDirection.FORWARD)
                 )

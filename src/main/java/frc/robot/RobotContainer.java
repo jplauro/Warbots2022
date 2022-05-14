@@ -14,19 +14,20 @@ import frc.robot.Auto.ExtakeBall;
 import frc.robot.Auto.OneBall;
 import frc.robot.Auto.Taxi;
 import frc.robot.Auto.TwoBalls;
-import frc.robot.Climber.WinchSubsystem;
 import frc.robot.Climber.ClimberSubsystem;
 import frc.robot.Climber.ControlPistons;
+import frc.robot.Climber.ControlPistons.PistonMotion;
 import frc.robot.Climber.ExtendArmsAndStow;
 import frc.robot.Climber.RaiseAndGrab;
 import frc.robot.Climber.WinchHold;
-import frc.robot.Climber.ControlPistons.PistonMotion;
+import frc.robot.Climber.WinchSubsystem;
 import frc.robot.Controls.ControlBoard;
 import frc.robot.Drive.DriveWithJoystick;
 import frc.robot.Drive.Drivetrain;
-import frc.robot.Loader.Intake;
-import frc.robot.Loader.OuttakeBall;
-import frc.robot.Loader.SmartIntake;
+import frc.robot.Intake.ControlIntake;
+import frc.robot.Intake.IntakeSubsystem;
+import frc.robot.Intake.SmartIntake;
+import frc.robot.Intake.ControlIntake.IntakeMotion;
 import frc.robot.Shooter.ActivateFiringPins;
 import frc.robot.Shooter.FiringPins;
 import frc.robot.Shooter.LazySusanSubsystem;
@@ -42,12 +43,12 @@ import frc.robot.Util.LEDs.LEDSubsystem;
 
 public class RobotContainer {
     private Drivetrain drivetrain;
-    private Intake intake;
-    private ShooterSubsystem shooter;
+    private IntakeSubsystem intakeSubsystem;
+    private ShooterSubsystem shooterSubsystem;
     private FiringPins firingPins;
-    private LazySusanSubsystem turret;
-    private ClimberSubsystem climberHooks;
-    private WinchSubsystem winch;
+    private LazySusanSubsystem lazySusanSubsystem;
+    private ClimberSubsystem climberSubsystem;
+    private WinchSubsystem winchSubsystem;
     private LEDSubsystem ledSubsystem;
 
     private DriveWithJoystick driveWithJoystick;
@@ -68,16 +69,16 @@ public class RobotContainer {
 
     private void initSubsystems() {
         this.drivetrain = new Drivetrain();
-        this.intake = new Intake();
-        this.shooter = new ShooterSubsystem();
+        this.intakeSubsystem = new IntakeSubsystem();
+        this.shooterSubsystem = new ShooterSubsystem();
         this.firingPins = new FiringPins();
-        this.turret = new LazySusanSubsystem(this.drivetrain::getPose);
-        this.climberHooks = new ClimberSubsystem();
-        this.winch = new WinchSubsystem();
+        this.lazySusanSubsystem = new LazySusanSubsystem(this.drivetrain::getPose);
+        this.climberSubsystem = new ClimberSubsystem();
+        this.winchSubsystem = new WinchSubsystem();
         this.ledSubsystem = new LEDSubsystem();
 
-        SmartDashboard.putData(new InstantCommand(this.turret::setHomePosition));
-        SmartDashboard.putData(new ZeroTurnTable(this.turret));
+        SmartDashboard.putData(new InstantCommand(this.lazySusanSubsystem::setHomePosition));
+        SmartDashboard.putData(new ZeroTurnTable(this.lazySusanSubsystem));
     }
 
     private void initControls() {
@@ -87,11 +88,11 @@ public class RobotContainer {
         );
 
         ControlBoard.climbSequenceButton.whenPressed(new RaiseAndGrab(
-            this.getWinchSubsystem(), this.getClimberSubsystem(), this.getIntake()
+            this.getWinchSubsystem(), this.getClimberSubsystem(), this.getIntakeSubsystem()
         ));
 
         ControlBoard.extendArmsButton.whenPressed(new ExtendArmsAndStow(
-            this.getWinchSubsystem(), this.getClimberSubsystem(), this.getIntake()
+            this.getWinchSubsystem(), this.getClimberSubsystem(), this.getIntakeSubsystem()
         ));
 
         ControlBoard.toggleHooksButton.whenPressed(new InstantCommand(() ->
@@ -124,7 +125,7 @@ public class RobotContainer {
         }));
 
         ControlBoard.fireTurretTrigger.whenActive(new ParallelCommandGroup(  
-            new ActivateFiringPins(getFiringPins(), getIntake()),
+            new ActivateFiringPins(getFiringPins(), getIntakeSubsystem()),
             new InstantCommand(this::logShot)
         ));
 
@@ -141,33 +142,33 @@ public class RobotContainer {
             .andThen(new InstantCommand(this.getShooterSubsystem()::stopMotors))
         );
 
-        ControlBoard.intakeButton.whileActiveOnce(new SmartIntake(this.getIntake(), this.getFiringPins()));
-        ControlBoard.outakeButton.whileActiveOnce(new OuttakeBall(this.getIntake()));
+        ControlBoard.intakeButton.whileActiveOnce(new SmartIntake(this.getIntakeSubsystem()));
+        ControlBoard.extakeButton.whileActiveOnce(new ControlIntake(this.getIntakeSubsystem(), IntakeMotion.EXTAKE));
     }
 
     public void initAuto() {
         this.autoSelector.setDefaultOption("Two-Ball", new TwoBalls(
             this, this.getDrivetrain(), this.getLazySusanSubsystem(), 
-            this.getShooterSubsystem(), this.getFiringPins(), this.getIntake()
+            this.getShooterSubsystem(), this.getFiringPins(), this.getIntakeSubsystem()
         ));
         
         this.autoSelector.addOption("One-Ball", new OneBall(
             this.getDrivetrain(), this.getLazySusanSubsystem(),
-            this.getShooterSubsystem(), this.getFiringPins(), this.getIntake()
+            this.getShooterSubsystem(), this.getFiringPins(), this.getIntakeSubsystem()
         ));
 
         this.autoSelector.addOption("Taxi", new Taxi(
-            this.getDrivetrain(), this.getIntake(), this.getLazySusanSubsystem()
+            this.getDrivetrain(), this.getIntakeSubsystem(), this.getLazySusanSubsystem()
         ));
 
-        this.autoSelector.addOption("Extake-Ball", new ExtakeBall(this.getIntake()));
+        this.autoSelector.addOption("Extake-Ball", new ExtakeBall(this.getIntakeSubsystem()));
 
         SmartDashboard.putData(this.autoSelector);
     }
 
     public void init() {
-        this.turret.setDefaultCommand(new ManualAimingPID(this.turret, ControlBoard.getOperatorController()));
-        this.ledSubsystem.setDefaultCommand(new LEDIdleCommand(this.ledSubsystem, this.intake, this.firingPins, this.turret));
+        this.lazySusanSubsystem.setDefaultCommand(new ManualAimingPID(this.lazySusanSubsystem, ControlBoard.getOperatorController()));
+        this.ledSubsystem.setDefaultCommand(new LEDIdleCommand(this.ledSubsystem, this.intakeSubsystem, this.firingPins, this.lazySusanSubsystem));
         SmartDashboard.putData(robotFieldWidget);
         robotFieldWidget.getObject("Turret").setPose(new Pose2d());
     }
@@ -192,11 +193,11 @@ public class RobotContainer {
     }
 
     public ClimberSubsystem getClimberSubsystem() {
-        return this.climberHooks;
+        return this.climberSubsystem;
     }
 
     public LazySusanSubsystem getLazySusanSubsystem() {
-        return this.turret;
+        return this.lazySusanSubsystem;
     }
 
     public Drivetrain getDrivetrain() {
@@ -204,11 +205,11 @@ public class RobotContainer {
     }
 
     public ShooterSubsystem getShooterSubsystem() {
-        return this.shooter;
+        return this.shooterSubsystem;
     }
 
-    public Intake getIntake() {
-        return this.intake;
+    public IntakeSubsystem getIntakeSubsystem() {
+        return this.intakeSubsystem;
     }
 
     public FiringPins getFiringPins() {
@@ -216,7 +217,7 @@ public class RobotContainer {
     }
 
     public WinchSubsystem getWinchSubsystem() {
-        return this.winch;
+        return this.winchSubsystem;
     }
 
     public XboxController getOperatorController() {

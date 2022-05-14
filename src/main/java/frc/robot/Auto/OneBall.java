@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Drive.DriveDirection;
 import frc.robot.Drive.DriveDistance;
 import frc.robot.Drive.Drivetrain;
-import frc.robot.Loader.Intake;
+import frc.robot.Intake.IntakeSubsystem;
 import frc.robot.Shooter.ActivateFiringPins;
 import frc.robot.Shooter.FiringPins;
 import frc.robot.Shooter.LazySusanSubsystem;
@@ -19,8 +19,8 @@ public class OneBall extends SequentialCommandGroup {
     private final double FIRST_SHOT_DISTANCE = 2; // In meters
 
     public OneBall(Drivetrain drivetrain, LazySusanSubsystem lazySusanSubsystem,
-    ShooterSubsystem shooterSubsystem, FiringPins firingPins, Intake intake) {
-        addRequirements(drivetrain, lazySusanSubsystem, shooterSubsystem, firingPins, intake);
+    ShooterSubsystem shooterSubsystem, FiringPins firingPins, IntakeSubsystem intakeSubsystem) {
+        addRequirements(drivetrain, lazySusanSubsystem, shooterSubsystem, firingPins, intakeSubsystem);
         addCommands(
             parallel(
                 new ConditionalCommand(new ZeroTurnTable(lazySusanSubsystem), 
@@ -29,7 +29,7 @@ public class OneBall extends SequentialCommandGroup {
             ),
             new WaitCommand(1),
             new LimelightSpinUp(shooterSubsystem),
-            new ActivateFiringPins(firingPins, intake)
+            new ActivateFiringPins(firingPins, intakeSubsystem)
         );
     }
 }

@@ -1,7 +1,7 @@
 package frc.robot.Climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Loader.Intake;
+import frc.robot.Intake.IntakeSubsystem;
 
 public class ControlWinch extends CommandBase {
     public enum WinchMotion {
@@ -20,15 +20,15 @@ public class ControlWinch extends CommandBase {
     }
 
     private final WinchSubsystem winchSubsystem;
-    private final Intake intake;
+    private final IntakeSubsystem intakeSubsystem;
     private final boolean isExtending;
     private final double speed;
     private double deltaCounts, targetCounts;
 
     public ControlWinch(WinchSubsystem winchSubsystem, 
-    Intake intake, double deltaCounts, WinchMotion motion) {
+    IntakeSubsystem intakeSubsystem, double deltaCounts, WinchMotion motion) {
         this.winchSubsystem = winchSubsystem;
-        this.intake = intake;
+        this.intakeSubsystem = intakeSubsystem;
         this.deltaCounts = deltaCounts;
         this.isExtending = motion == WinchMotion.EXTEND;
         this.speed = motion.get();
@@ -38,7 +38,7 @@ public class ControlWinch extends CommandBase {
     @Override
     public void initialize() {
         if (this.isExtending) {
-            this.intake.extendIntakeArms();
+            this.intakeSubsystem.extendIntakeArms();
         }
 
         this.targetCounts = this.winchSubsystem.getWinchPosition() 
@@ -50,7 +50,7 @@ public class ControlWinch extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         if (this.isExtending) {
-            this.intake.floatIntakeArms();
+            this.intakeSubsystem.floatIntakeArms();
         }
 
         this.winchSubsystem.setWinchSpeed(0);
