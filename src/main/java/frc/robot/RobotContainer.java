@@ -14,13 +14,13 @@ import frc.robot.Auto.ExtakeBall;
 import frc.robot.Auto.OneBall;
 import frc.robot.Auto.Taxi;
 import frc.robot.Auto.TwoBalls;
+import frc.robot.Climber.ClimberConstants;
 import frc.robot.Climber.ClimberSubsystem;
 import frc.robot.Climber.ControlPistons;
 import frc.robot.Climber.ControlPistons.PistonMotion;
 import frc.robot.Climber.ExtendArmsAndStow;
 import frc.robot.Climber.RaiseAndGrab;
 import frc.robot.Climber.WinchHold;
-import frc.robot.Climber.WinchSubsystem;
 import frc.robot.Controls.ControlBoard;
 import frc.robot.Drive.DriveWithJoystick;
 import frc.robot.Drive.Drivetrain;
@@ -48,7 +48,6 @@ public class RobotContainer {
     private FiringPins firingPins;
     private LazySusanSubsystem lazySusanSubsystem;
     private ClimberSubsystem climberSubsystem;
-    private WinchSubsystem winchSubsystem;
     private LEDSubsystem ledSubsystem;
 
     private DriveWithJoystick driveWithJoystick;
@@ -74,7 +73,6 @@ public class RobotContainer {
         this.firingPins = new FiringPins();
         this.lazySusanSubsystem = new LazySusanSubsystem(this.drivetrain::getPose);
         this.climberSubsystem = new ClimberSubsystem();
-        this.winchSubsystem = new WinchSubsystem();
         this.ledSubsystem = new LEDSubsystem();
 
         SmartDashboard.putData(new InstantCommand(this.lazySusanSubsystem::setHomePosition));
@@ -88,11 +86,11 @@ public class RobotContainer {
         );
 
         ControlBoard.climbSequenceButton.whenPressed(new RaiseAndGrab(
-            this.getWinchSubsystem(), this.getClimberSubsystem(), this.getIntakeSubsystem()
+            this.getClimberSubsystem(), this.getIntakeSubsystem()
         ));
 
         ControlBoard.extendArmsButton.whenPressed(new ExtendArmsAndStow(
-            this.getWinchSubsystem(), this.getClimberSubsystem(), this.getIntakeSubsystem()
+            this.getClimberSubsystem(), this.getIntakeSubsystem()
         ));
 
         ControlBoard.toggleHooksButton.whenPressed(new InstantCommand(() ->
@@ -102,8 +100,8 @@ public class RobotContainer {
         ).withTimeout(0.3)); // Equivalent of 15 frames
 
         ControlBoard.winchHoldButton.whenPressed(new WinchHold(
-            this.getWinchSubsystem(), 
-            this.getWinchSubsystem().getWinchPosition(), Constants.holdTime
+            this.getClimberSubsystem(), this.getClimberSubsystem().getWinchPosition(), 
+            ClimberConstants.WINCH_HOLD_FRAMES
         ));
 
         // TODO: here, now make a unified aiming/flywheel spinup command that we can use
@@ -214,10 +212,6 @@ public class RobotContainer {
 
     public FiringPins getFiringPins() {
         return this.firingPins;
-    }
-
-    public WinchSubsystem getWinchSubsystem() {
-        return this.winchSubsystem;
     }
 
     public XboxController getOperatorController() {

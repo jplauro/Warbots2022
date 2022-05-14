@@ -19,20 +19,20 @@ public class ControlWinch extends CommandBase {
         }
     }
 
-    private final WinchSubsystem winchSubsystem;
+    private final ClimberSubsystem climberSubsystem;
     private final IntakeSubsystem intakeSubsystem;
     private final boolean isExtending;
     private final double speed;
     private double deltaCounts, targetCounts;
 
-    public ControlWinch(WinchSubsystem winchSubsystem, 
+    public ControlWinch(ClimberSubsystem climberSubsystem, 
     IntakeSubsystem intakeSubsystem, double deltaCounts, WinchMotion motion) {
-        this.winchSubsystem = winchSubsystem;
+        this.climberSubsystem = climberSubsystem;
         this.intakeSubsystem = intakeSubsystem;
         this.deltaCounts = deltaCounts;
         this.isExtending = motion == WinchMotion.EXTEND;
         this.speed = motion.get();
-        addRequirements(this.winchSubsystem);
+        addRequirements(this.climberSubsystem);
     }
 
     @Override
@@ -41,10 +41,10 @@ public class ControlWinch extends CommandBase {
             this.intakeSubsystem.extendIntakeArms();
         }
 
-        this.targetCounts = this.winchSubsystem.getWinchPosition() 
+        this.targetCounts = this.climberSubsystem.getWinchPosition() 
         + this.deltaCounts * Math.signum(this.speed); // Subtract if the speed is negative
 
-        this.winchSubsystem.setWinchSpeed(this.speed);
+        this.climberSubsystem.setWinchSpeed(this.speed);
     }
 
     @Override
@@ -53,16 +53,16 @@ public class ControlWinch extends CommandBase {
             this.intakeSubsystem.floatIntakeArms();
         }
 
-        this.winchSubsystem.setWinchSpeed(0);
+        this.climberSubsystem.setWinchSpeed(0);
     }
 
     @Override
     public boolean isFinished() {
         if (this.isExtending) {
-            return this.winchSubsystem.getWinchPosition() >= 
+            return this.climberSubsystem.getWinchPosition() >= 
             Math.min(this.targetCounts, ClimberConstants.WINCH_LIMIT_MAX);
         } else {
-            return this.winchSubsystem.getWinchPosition() <= 
+            return this.climberSubsystem.getWinchPosition() <= 
             Math.max(this.targetCounts, ClimberConstants.WINCH_LIMIT_MIN);
         }
     }

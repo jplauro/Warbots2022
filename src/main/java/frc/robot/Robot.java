@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
         this.robotContainer.getLazySusanSubsystem().setMotorMode(IdleMode.kBrake);
         this.robotContainer.setTeleopDrive();
         this.robotContainer.getDrivetrain().setBrake(true);
-        this.robotContainer.getWinchSubsystem().setWinchPosition(0);
+        this.robotContainer.getClimberSubsystem().setWinchPosition(0);
     }
 
     @Override

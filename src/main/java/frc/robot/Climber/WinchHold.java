@@ -1,18 +1,19 @@
 package frc.robot.Climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 
 public class WinchHold extends CommandBase {
-    private final WinchSubsystem winchSubsystem;
+    private final ClimberSubsystem climberSubsystem;
     private final int endFrame;
     private double frames, holdCount;
 
-    public WinchHold(WinchSubsystem winchSubsystem, double holdCount, int endFrame) {
-        this.winchSubsystem = winchSubsystem;
+    public final double winchHoldDiffConst = 0.3;
+
+    public WinchHold(ClimberSubsystem climberSubsystem, double holdCount, int endFrame) {
+        this.climberSubsystem = climberSubsystem;
         this.holdCount = holdCount;
         this.endFrame = endFrame;
-        addRequirements(this.winchSubsystem);
+        addRequirements(this.climberSubsystem);
     }
 
     @Override
@@ -22,15 +23,15 @@ public class WinchHold extends CommandBase {
 
     @Override
     public void execute() {
-        double pos = this.winchSubsystem.getWinchPosition();
-        double speed = Constants.diffConstWinchHold * (this.holdCount - pos);
-        this.winchSubsystem.setWinchSpeed(speed);
+        double pos = this.climberSubsystem.getWinchPosition();
+        double speed = this.winchHoldDiffConst * (this.holdCount - pos);
+        this.climberSubsystem.setWinchSpeed(speed);
         this.frames++;
     }
 
     @Override
     public void end(boolean interrupted) {
-        this.winchSubsystem.setWinchSpeed(0);
+        this.climberSubsystem.setWinchSpeed(0);
     }
 
     @Override

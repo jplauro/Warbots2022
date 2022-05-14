@@ -60,10 +60,6 @@ public final class Constants {
     //Lazy susan
     public static final int calSwitchID = 9;
 
-    //intake
-    public static final int intakeSwitchID = 7;
-    public static final double intakeSwitchDebounceTime = 0.1; // Measured in seconds
-
     public static final I2C.Port i2cColorSensorPort = I2C.Port.kMXP;
     public static final int minColorSensorProximity = 100; // Increases with proximity
 
@@ -89,14 +85,10 @@ public final class Constants {
     public static final double diffConstLS = 0.014;//0.012 0.014
     public static final double diffConstAutoLS = 0.040;
     public static final double diffConstShooter = 9 * Math.pow(10, -6);
-    public static final double diffConstWinchHold = 0.3;
     public static final double diffConstKeepPosition = 0.00001; // TODO: Test this constant and optimize it
     public static final double diffConstTurn = 0.008;
 
     public static final double diffConstTankDriveAim = 0.014;
-    
-    public static final int holdTime = 1000;
-
 
     public static final double leftBias = 1.3;
     // Sim Vars

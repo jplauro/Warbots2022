@@ -6,15 +6,14 @@ import frc.robot.Climber.ControlWinch.WinchMotion;
 import frc.robot.Intake.IntakeSubsystem;
 
 public class ExtendArmsAndStow extends SequentialCommandGroup {
-    public ExtendArmsAndStow(WinchSubsystem winchSubsystem, 
-    ClimberSubsystem climberSubsystem, IntakeSubsystem intakeSubsystem) {
-        addRequirements(winchSubsystem, climberSubsystem, intakeSubsystem);        
+    public ExtendArmsAndStow(ClimberSubsystem climberSubsystem, IntakeSubsystem intakeSubsystem) {
+        addRequirements(climberSubsystem, intakeSubsystem);        
         addCommands(
             new ControlPistons(climberSubsystem, 0.1, PistonMotion.RAISE), // Bump the arms up slightly
-            new ControlWinch(winchSubsystem, intakeSubsystem, 
+            new ControlWinch(climberSubsystem, intakeSubsystem, 
             ClimberConstants.WINCH_LIMIT_MAX / 2, WinchMotion.EXTEND),
             new ControlPistons(climberSubsystem, 0.1, PistonMotion.LOWER),
-            new ControlWinch(winchSubsystem, intakeSubsystem, 
+            new ControlWinch(climberSubsystem, intakeSubsystem, 
             ClimberConstants.WINCH_LIMIT_MAX / 2, WinchMotion.EXTEND)
         );
     }

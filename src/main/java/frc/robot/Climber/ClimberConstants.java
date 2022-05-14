@@ -10,6 +10,6 @@ public class ClimberConstants {
     public static final double WINCH_LIMIT_MIN = 0;
     public static final double WINCH_LIMIT_MAX = 100;
     public static final double PISTON_FRAMES_MAX = 15;
-    
+    public static final int WINCH_HOLD_FRAMES = 250;
     public static final boolean BRAKE_WHEN_IDLE = true;
 }
