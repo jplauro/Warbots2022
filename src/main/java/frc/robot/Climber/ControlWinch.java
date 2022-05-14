@@ -1,7 +1,6 @@
 package frc.robot.Climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.Loader.Intake;
 
 public class ControlWinch extends CommandBase {
@@ -20,20 +19,20 @@ public class ControlWinch extends CommandBase {
         }
     }
 
-    private final ClimberMotorsSubsystem climberMotorsSubsystem;
+    private final WinchSubsystem winchSubsystem;
     private final Intake intake;
     private final boolean isExtending;
     private final double speed;
     private double deltaCounts, targetCounts;
 
-    public ControlWinch(ClimberMotorsSubsystem climberMotorsSubsystem, 
+    public ControlWinch(WinchSubsystem winchSubsystem, 
     Intake intake, double deltaCounts, WinchMotion motion) {
-        this.climberMotorsSubsystem = climberMotorsSubsystem;
+        this.winchSubsystem = winchSubsystem;
         this.intake = intake;
         this.deltaCounts = deltaCounts;
         this.isExtending = motion == WinchMotion.EXTEND;
         this.speed = motion.get();
-        addRequirements(climberMotorsSubsystem);
+        addRequirements(this.winchSubsystem);
     }
 
     @Override
@@ -42,10 +41,10 @@ public class ControlWinch extends CommandBase {
             this.intake.extendIntakeArms();
         }
 
-        this.targetCounts = this.climberMotorsSubsystem.getWinchPosition() 
+        this.targetCounts = this.winchSubsystem.getWinchPosition() 
         + this.deltaCounts * Math.signum(this.speed); // Subtract if the speed is negative
 
-        this.climberMotorsSubsystem.setWinchSpeed(this.speed);
+        this.winchSubsystem.setWinchSpeed(this.speed);
     }
 
     @Override
@@ -54,17 +53,17 @@ public class ControlWinch extends CommandBase {
             this.intake.floatIntakeArms();
         }
 
-        this.climberMotorsSubsystem.setWinchSpeed(0);
+        this.winchSubsystem.setWinchSpeed(0);
     }
 
     @Override
     public boolean isFinished() {
         if (this.isExtending) {
-            return climberMotorsSubsystem.getWinchPosition() >= 
-            Math.min(this.targetCounts, Constants.winchMaxLimit);
+            return this.winchSubsystem.getWinchPosition() >= 
+            Math.min(this.targetCounts, ClimberConstants.WINCH_LIMIT_MAX);
         } else {
-            return climberMotorsSubsystem.getWinchPosition() <= 
-            Math.max(this.targetCounts, Constants.winchMinLimit);
+            return this.winchSubsystem.getWinchPosition() <= 
+            Math.max(this.targetCounts, ClimberConstants.WINCH_LIMIT_MIN);
         }
     }
 }

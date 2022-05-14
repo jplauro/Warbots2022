@@ -43,21 +43,12 @@ public final class Constants {
     public static final int leftShooterMotorID = 5;
     public static final int rightShooterMotorID = 6;
 
-    // climber CAN IDs
-    public static final int leftClimberMotorID = 7;
-    public static final int rightClimberMotorID = 8;
-
     // lazysusan CAN IDs
     public static final int lazySusanID = 9;
 
     // loader CAN IDs
     public static final int intakeMotorID = 10;
     public static final int intakeArmsMotorID = 11;
-
-    // Climber
-    public static final double winchMinLimit = 0;
-    public static final double winchMaxLimit = 100;
-    public static final int pistonMaxFrames = 15;
 
     // Shooter
     public static final int minShooterRPM = 0;
@@ -72,9 +63,6 @@ public final class Constants {
 
     //Lazy susan
     public static final int calSwitchID = 9;
-
-    //Climber
-    public static final int climberSensorID = 8;
 
     //intake
     public static final int intakeSwitchID = 7;

@@ -46,12 +46,7 @@ public class Robot extends TimedRobot {
         this.robotContainer.getLazySusanSubsystem().setMotorMode(IdleMode.kBrake);
         this.robotContainer.setTeleopDrive();
         this.robotContainer.getDrivetrain().setBrake(true);
-        this.robotContainer.getClimberMotorsSubsystem().getWinchMotor().getEncoder().setPosition(0);
-    }
-
-    @Override
-    public void teleopPeriodic() {
-        SmartDashboard.putBoolean("Rear Limit Switch", this.robotContainer.getClimberMotorsSubsystem().hitRearLimitSwitch());
+        this.robotContainer.getWinchSubsystem().setWinchPosition(0);
     }
 
     @Override

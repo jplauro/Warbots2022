@@ -2,7 +2,6 @@ package frc.robot.Climber;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 
 public class ControlPistons extends CommandBase {
     public enum PistonMotion {
@@ -39,7 +38,7 @@ public class ControlPistons extends CommandBase {
     @Override
     public void initialize() {
         this.frames = 0;
-        this.targetFrames = (int) Math.round(this.percent * Constants.pistonMaxFrames);
+        this.targetFrames = (int) Math.round(this.percent * ClimberConstants.PISTON_FRAMES_MAX);
         this.climberSubsystem.setArmsSolenoid(this.motion);
     }
 

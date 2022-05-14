@@ -5,45 +5,27 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimberSubsystem extends SubsystemBase {
-    // protected final CANSparkMax leftClimberMotor, rightClimberMotor;
-    // protected final RelativeEncoder encoder;
-    protected final Solenoid hangingSolenoid;
-    protected final Solenoid armsSolenoid;
+    private final Solenoid armsSolenoid;
+    private final Solenoid hooksSolenoid;
     
-
     public ClimberSubsystem() {
-
-        hangingSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 2);
-        armsSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
-
+        this.armsSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.ARMS_SOLENOID_ID);
+        this.hooksSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.HOOKS_SOLENOID_ID);
     }
 
-    @Override
-    public void periodic() {
-        // System.out.println(getClimberSensor());
+    public boolean getArmsSolenoid() {
+        return this.armsSolenoid.get();
     }
 
-
-    public Solenoid getHangingSolenoid() {
-        return hangingSolenoid;
+    public boolean getHooksSolenoid() {
+        return this.hooksSolenoid.get();
     }
-    public Solenoid getArmsSolenoid() {
-        return armsSolenoid;
-    }
-    // public Solenoid getBumperSolenoid() {
-    //     return bumperSolenoid;
-    // }
-    
 
-
-    public void setHangingSolenoid(boolean b) {
-        this.getHangingSolenoid().set(b);
+    public void setArmsSolenoid(boolean state) {
+        this.armsSolenoid.set(state);
     }
-    public void setArmsSolenoid(boolean b) {
-        this.getArmsSolenoid().set(b);
-    }
-    // public void setBumperSolenoid(boolean b) {
-    //     this.getBumperSolenoid().set(b);
-    // }
 
+    public void setHangingSolenoid(boolean state) {
+        this.hooksSolenoid.set(state);
+    }
 }
