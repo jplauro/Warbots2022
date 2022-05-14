@@ -16,10 +16,11 @@ import frc.robot.Auto.Taxi;
 import frc.robot.Auto.TwoBalls;
 import frc.robot.Climber.ClimberMotorsSubsystem;
 import frc.robot.Climber.ClimberSubsystem;
+import frc.robot.Climber.ControlPistons;
 import frc.robot.Climber.ExtendArmsAndStow;
 import frc.robot.Climber.RaiseAndGrab;
-import frc.robot.Climber.RaisePistons;
 import frc.robot.Climber.WinchHold;
+import frc.robot.Climber.ControlPistons.PistonMotion;
 import frc.robot.Controls.ControlBoard;
 import frc.robot.Drive.DriveWithJoystick;
 import frc.robot.Drive.Drivetrain;
@@ -81,16 +82,18 @@ public class RobotContainer {
 
     private void initControls() {
         // operator
-        ControlBoard.raiseArmsButton.whenPressed(new RaisePistons(this.getClimberSubsystem()));
+        ControlBoard.raiseArmsButton.whenPressed(
+            new ControlPistons(this.getClimberSubsystem(), PistonMotion.RAISE)
+        );
 
         ControlBoard.climbSequenceButton.whenPressed(new RaiseAndGrab(
-            this.getClimberMotorsSubsystem(), this.getClimberSubsystem()
+            this.getClimberMotorsSubsystem(), this.getClimberSubsystem(), this.getIntake()
         ));
 
         ControlBoard.extendArmsButton.whenPressed(new ExtendArmsAndStow(
             this.getClimberMotorsSubsystem(), this.getClimberSubsystem(), this.getIntake()
         ));
-        
+
         ControlBoard.toggleHooksButton.whenPressed(new InstantCommand(() ->
             this.getClimberSubsystem().setHangingSolenoid(
                 !this.getClimberSubsystem().getHangingSolenoid().get()

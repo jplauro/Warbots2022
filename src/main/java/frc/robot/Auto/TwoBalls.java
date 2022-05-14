@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
-import frc.robot.Drive.Direction;
+import frc.robot.Drive.DriveDirection;
 import frc.robot.Drive.DriveDistance;
 import frc.robot.Drive.Drivetrain;
 import frc.robot.Loader.AutoLoad;
@@ -37,7 +37,7 @@ public class TwoBalls extends SequentialCommandGroup {
                         // Only calibrate if not already calibrated
                         new ConditionalCommand(new ZeroTurnTable(lazySusanSubsystem),
                             new InstantCommand(), lazySusanSubsystem::getIsCal),
-                        new DriveDistance(drivetrain, this.FIRST_SHOT_DISTANCE, Direction.FORWARD)
+                        new DriveDistance(drivetrain, this.FIRST_SHOT_DISTANCE, DriveDirection.FORWARD)
                     ),
                     new WaitCommand(2),
                     new TurretAimingPID(lazySusanSubsystem, robotContainer.getRobotField(), 
@@ -45,14 +45,14 @@ public class TwoBalls extends SequentialCommandGroup {
                     new ActivateFiringPins(firingPins, intake),
                     parallel(
                         new AutoLoad(intake),
-                        new DriveDistance(drivetrain, this.SECOND_SHOT_DISTANCE, Direction.FORWARD)
+                        new DriveDistance(drivetrain, this.SECOND_SHOT_DISTANCE, DriveDirection.FORWARD)
                     ),
-                    new DriveDistance(drivetrain, this.SECOND_SHOT_DISTANCE, Direction.BACKWARD),
+                    new DriveDistance(drivetrain, this.SECOND_SHOT_DISTANCE, DriveDirection.BACKWARD),
                     new TurretAimingPID(lazySusanSubsystem, robotContainer.getRobotField(), 
                         drivetrain::getPose, 100, false),
                     new ActivateFiringPins(firingPins, intake),
                     new WaitCommand(1),
-                    new DriveDistance(drivetrain, this.TAXI_DISTANCE, Direction.FORWARD)
+                    new DriveDistance(drivetrain, this.TAXI_DISTANCE, DriveDirection.FORWARD)
                 )
             ),
             new InstantCommand(() -> Limelight.setLedMode(LedMode.OFF))

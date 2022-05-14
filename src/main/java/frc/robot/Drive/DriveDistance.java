@@ -9,7 +9,7 @@ public class DriveDistance extends CommandBase {
     private double direction;
     private Pose2d initPose;
 
-    public DriveDistance(Drivetrain drivetrain, double distance, Direction direction) {
+    public DriveDistance(Drivetrain drivetrain, double distance, DriveDirection direction) {
         this.drivetrain = drivetrain;
         this.distance = distance;
         this.direction = direction.get();

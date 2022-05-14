@@ -1,60 +1,47 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.Climber;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class SensorWinchRetract extends CommandBase {
-  protected ClimberMotorsSubsystem climberMotorsSubsystem;
-  protected ClimberSubsystem climberSubsystem;
-  protected double deltaCounts, targetCounts;
-  protected boolean isBarDetected;
-  protected Timer timer;
+    private final ClimberMotorsSubsystem climberMotorsSubsystem;
+    private boolean isBarDetected;
+    private Timer timer;
 
-  public SensorWinchRetract(ClimberMotorsSubsystem climberMotorsSubsystem, ClimberSubsystem climberSubsystem) {
-      addRequirements(climberMotorsSubsystem);
-      this.climberMotorsSubsystem = climberMotorsSubsystem;
-      this.climberSubsystem = climberSubsystem;
-  }
+    public SensorWinchRetract(ClimberMotorsSubsystem climberMotorsSubsystem) {
+        this.climberMotorsSubsystem = climberMotorsSubsystem;
+        addRequirements(this.climberMotorsSubsystem);
+    }
 
-  @Override
-  public void initialize() {
-      System.out.println("Current: " + this.climberMotorsSubsystem.getWinchPosition());
-      this.climberMotorsSubsystem.setWinchSpeed(-1);
-      isBarDetected = false;
-      timer = new Timer();
-      timer.start();
-      // System.out.println("Winch begins wind up");
-  }
+    @Override
+    public void initialize() {
+        this.climberMotorsSubsystem.setWinchSpeed(-1);
+        this.isBarDetected = false;
+        this.timer = new Timer();
+        this.timer.start();
+    }
 
-  @Override
-  public void execute() {
-      System.out.println("Winch is winding");
-      if (!(climberMotorsSubsystem.getClimberSensor())) {
-        isBarDetected = true;
-      }
-      if (isBarDetected) {
-        climberMotorsSubsystem.setWinchSpeed(-0.6);
-      } else {
-        climberMotorsSubsystem.setWinchSpeed(-1);
-      }
-      // this.climberMotorsSubsystem.setWinchSpeed(
-      //     Math.abs(this.targetCounts-this.climberMotorsSubsystem.getWinchPosition())>10?-1:-.2);
-  }
+    @Override
+    public void execute() {
+        if (!this.climberMotorsSubsystem.getClimberSensor()) {
+            this.isBarDetected = true;
+        }
 
-  @Override
-  public void end(boolean interrupted) {
-      this.climberMotorsSubsystem.setWinchSpeed(0);
-      this.climberMotorsSubsystem.getWinchEncoder().setPosition(0);
-      System.out.println("Ran winch");
-  }
+        if (this.isBarDetected) {
+            this.climberMotorsSubsystem.setWinchSpeed(-0.6);
+        } else {
+            this.climberMotorsSubsystem.setWinchSpeed(-1);
+        }
+    }
 
-  @Override
-  public boolean isFinished() {//climberSubsystem.getWinchMotor().getEncoder().getPosition() <= -counts
-      // System.out.println("Climber Sensor Hitting: " + climberMotorsSubsystem.getClimberSensor());
-      return climberMotorsSubsystem.hitRearLimitSwitch() || timer.hasElapsed(5);
-  }
+    @Override
+    public void end(boolean interrupted) {
+        this.climberMotorsSubsystem.setWinchSpeed(0);
+        this.climberMotorsSubsystem.getWinchEncoder().setPosition(0);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return this.climberMotorsSubsystem.hitRearLimitSwitch() || this.timer.hasElapsed(5);
+    }
 }

@@ -4,41 +4,37 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 
 public class WinchHold extends CommandBase {
-    protected ClimberMotorsSubsystem climberMotorsSubsystem;
-    protected double frames, holdCount;
-    protected int endFrame;
+    private final ClimberMotorsSubsystem climberMotorsSubsystem;
+    private final int endFrame;
+    private double frames, holdCount;
 
     public WinchHold(ClimberMotorsSubsystem climberMotorsSubsystem, double holdCount, int endFrame) {
-        addRequirements(climberMotorsSubsystem);
         this.climberMotorsSubsystem = climberMotorsSubsystem;
         this.holdCount = holdCount;
         this.endFrame = endFrame;
+        addRequirements(this.climberMotorsSubsystem);
     }
 
     @Override
     public void initialize() {
         this.frames = 0;
-        System.out.println("WINCH HOLD WINCH HOLD");
     }
 
     @Override
     public void execute() {
         double pos = this.climberMotorsSubsystem.getWinchPosition();
-        double speed = Constants.diffConstWinchHold*(this.holdCount-pos);
-        System.out.println("Speed !! : " + speed);
+        double speed = Constants.diffConstWinchHold * (this.holdCount - pos);
         this.climberMotorsSubsystem.setWinchSpeed(speed);
         frames++;
     }
 
     @Override
     public void end(boolean interrupted) {
-        System.out.println("DONE DONE DONE");
-        System.out.println("EXITING");
         this.climberMotorsSubsystem.setWinchSpeed(0);
     }
 
     @Override
-    public boolean isFinished() {//climberSubsystem.getWinchMotor().getEncoder().getPosition() >= counts
+    public boolean isFinished() {
         return this.frames >= this.endFrame;
     }
 }

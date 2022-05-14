@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Drive.Direction;
+import frc.robot.Drive.DriveDirection;
 import frc.robot.Drive.DriveDistance;
 import frc.robot.Drive.Drivetrain;
 import frc.robot.Loader.Intake;
@@ -25,7 +25,7 @@ public class OneBall extends SequentialCommandGroup {
             parallel(
                 new ConditionalCommand(new ZeroTurnTable(lazySusanSubsystem), 
                     new InstantCommand(), lazySusanSubsystem::getIsCal),
-                new DriveDistance(drivetrain, this.FIRST_SHOT_DISTANCE, Direction.FORWARD)
+                new DriveDistance(drivetrain, this.FIRST_SHOT_DISTANCE, DriveDirection.FORWARD)
             ),
             new WaitCommand(1),
             new LimelightSpinUp(shooterSubsystem),

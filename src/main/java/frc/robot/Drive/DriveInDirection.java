@@ -9,7 +9,7 @@ public class DriveInDirection extends CommandBase {
     private final double targetFrames;
     private double frames;
 
-    public DriveInDirection(Drivetrain drivetrain, Direction direction, double speed, double targetFrames) {
+    public DriveInDirection(Drivetrain drivetrain, DriveDirection direction, double speed, double targetFrames) {
         this.drivetrain = drivetrain;
         this.direction = direction.get();
         this.speed = speed;
@@ -17,7 +17,7 @@ public class DriveInDirection extends CommandBase {
         addRequirements(this.drivetrain);
     }
 
-    public DriveInDirection(Drivetrain drivetrain, Direction direction) {
+    public DriveInDirection(Drivetrain drivetrain, DriveDirection direction) {
         this(drivetrain, direction, 0.5, 60);
     }
 
