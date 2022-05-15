@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Shooter.TestSetpointSpinUp;
+import frc.robot.Turret.ManualAimingPID;
+import frc.robot.Turret.MoveTurretToPos;
 import frc.robot.Util.Limelight;
 import frc.robot.Util.Limelight.LedMode;
 
@@ -30,7 +33,7 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         this.robotContainer.getDrivetrain().setBrake(true);
-        this.robotContainer.getLazySusanSubsystem().setMotorMode(IdleMode.kCoast);
+        this.robotContainer.getTurretSubsystem().setMotorMode(IdleMode.kCoast);
         CommandScheduler.getInstance().cancelAll();
     }
 
@@ -43,10 +46,13 @@ public class Robot extends TimedRobot {
         this.robotContainer.calibrateTurntable();
         this.robotContainer.getIntakeSubsystem().disableInnerIntakeMotor();
         this.robotContainer.getShooterSubsystem().setOffsetSpeed(0);
-        this.robotContainer.getLazySusanSubsystem().setMotorMode(IdleMode.kBrake);
+        this.robotContainer.getTurretSubsystem().setMotorMode(IdleMode.kBrake);
         this.robotContainer.setTeleopDrive();
         this.robotContainer.getDrivetrain().setBrake(true);
         this.robotContainer.getClimberSubsystem().setWinchPosition(0);
+        this.robotContainer.getTurretSubsystem().setDefaultCommand(new ManualAimingPID(
+            this.robotContainer.getTurretSubsystem(), this.robotContainer.getOperatorController()
+        ));
     }
 
     @Override
@@ -58,7 +64,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         Limelight.setLedMode(LedMode.ON);
         this.robotContainer.getShooterSubsystem().setOffsetSpeed(0);
-        this.robotContainer.getLazySusanSubsystem().setMotorMode(IdleMode.kBrake);
+        this.robotContainer.getTurretSubsystem().setMotorMode(IdleMode.kBrake);
 
         this.autonomousCommand = this.robotContainer.getSelectedAuto();
 
@@ -74,9 +80,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-        CommandScheduler.getInstance().cancelAll();
-        this.robotContainer.init();
-        this.robotContainer.getLazySusanSubsystem().setMotorMode(IdleMode.kBrake);
+        this.robotContainer.getTurretSubsystem().setMotorMode(IdleMode.kBrake);
+        this.robotContainer.getTurretSubsystem().setDefaultCommand(
+            new MoveTurretToPos(this.robotContainer.getTurretSubsystem())
+        );
+        new TestSetpointSpinUp(this.robotContainer.getShooterSubsystem()).schedule();
     }
 
     /**
@@ -101,11 +109,11 @@ public class Robot extends TimedRobot {
         Pose2d hubPos = new Pose2d(7.940, 4.08, new Rotation2d()); // Position of the hub
         this.robotContainer.getRobotField().getObject("hub").setPose(hubPos);
         Pose2d turretPos = new Pose2d(robotPos.getTranslation(),
-                robotPos.getRotation().plus(this.robotContainer.getLazySusanSubsystem().getRotation()));
+                robotPos.getRotation().plus(this.robotContainer.getTurretSubsystem().getRotation()));
         // Turret position
         this.robotContainer.getRobotField().getObject("Turret").setPose(turretPos);
 
-        this.robotContainer.getShooterSubsystem().possim.setPosition(turretPos);
-        this.robotContainer.getShooterSubsystem().possim.update(Constants.kSimUpdateTime);
+        this.robotContainer.getShooterSubsystem().posSim.setPosition(turretPos);
+        this.robotContainer.getShooterSubsystem().posSim.update(Constants.kSimUpdateTime);
     }
 }

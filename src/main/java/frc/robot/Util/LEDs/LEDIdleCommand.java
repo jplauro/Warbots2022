@@ -4,14 +4,14 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Intake.IntakeSubsystem;
 import frc.robot.Shooter.FiringPins;
-import frc.robot.Shooter.LazySusanSubsystem;
+import frc.robot.Turret.TurretSubsystem;
 import frc.robot.Util.LEDs.LEDSubsystem.LEDAnimation;
 import frc.robot.Util.LEDs.LEDSubsystem.LEDManager;
 
 public class LEDIdleCommand extends CommandBase {
     protected IntakeSubsystem intakeSubsystem;
     protected FiringPins firingPins;
-    protected LazySusanSubsystem lazySusanSubsystem;
+    protected TurretSubsystem turretSubsystem;
 
     protected LEDAnimation noBallsAnimCalibrated = LEDManager.STRIP0.fadeTwoAnimation(1,
         40,
@@ -61,10 +61,10 @@ public class LEDIdleCommand extends CommandBase {
     // );
 
     public LEDIdleCommand(LEDSubsystem ledSubsystem, IntakeSubsystem intakeSubsystem, 
-    FiringPins firingPins, LazySusanSubsystem lazySusanSubsystem) {
+    FiringPins firingPins, TurretSubsystem turretSubsystem) {
         this.intakeSubsystem = intakeSubsystem;
         this.firingPins = firingPins;
-        this.lazySusanSubsystem = lazySusanSubsystem;
+        this.turretSubsystem = turretSubsystem;
         addRequirements(ledSubsystem);
     }
 
@@ -76,7 +76,7 @@ public class LEDIdleCommand extends CommandBase {
             // } else { // ONE ball
             //     this.oneBallAnim.step();
             // }
-        } else if(this.lazySusanSubsystem.getIsCal()) {
+        } else if(this.turretSubsystem.getIsCalibrated()) {
             this.noBallsAnimCalibrated.step();
         } else {
             this.noBallsAnimUncalibrated.step();

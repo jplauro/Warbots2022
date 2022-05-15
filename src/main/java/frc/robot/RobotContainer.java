@@ -30,13 +30,13 @@ import frc.robot.Intake.SmartIntake;
 import frc.robot.Intake.ControlIntake.IntakeMotion;
 import frc.robot.Shooter.ActivateFiringPins;
 import frc.robot.Shooter.FiringPins;
-import frc.robot.Shooter.LazySusanSubsystem;
 import frc.robot.Shooter.LimelightSpinUp;
-import frc.robot.Shooter.ManualAimingPID;
+import frc.robot.Shooter.ShooterConstants;
 import frc.robot.Shooter.ShooterSubsystem;
-import frc.robot.Shooter.TankDriveAiming;
-import frc.robot.Shooter.TurretAimingPID;
-import frc.robot.Shooter.ZeroTurnTable;
+import frc.robot.Turret.TurretSubsystem;
+import frc.robot.Turret.TankDriveAiming;
+import frc.robot.Turret.TurretAimingPID;
+import frc.robot.Turret.CalibrateTurret;
 import frc.robot.Util.Limelight;
 import frc.robot.Util.LEDs.LEDIdleCommand;
 import frc.robot.Util.LEDs.LEDSubsystem;
@@ -46,13 +46,12 @@ public class RobotContainer {
     private IntakeSubsystem intakeSubsystem;
     private ShooterSubsystem shooterSubsystem;
     private FiringPins firingPins;
-    private LazySusanSubsystem lazySusanSubsystem;
+    private TurretSubsystem turretSubsystem;
     private ClimberSubsystem climberSubsystem;
     private LEDSubsystem ledSubsystem;
 
     private DriveWithJoystick driveWithJoystick;
-    private SendableChooser<CommandBase> autoSelector = new SendableChooser<CommandBase>();
-
+    private SendableChooser<CommandBase> autoSelector = new SendableChooser<>();
     private Field2d robotFieldWidget = new Field2d(); // TODO: include Robot odometry
 
     public RobotContainer() {
@@ -71,12 +70,12 @@ public class RobotContainer {
         this.intakeSubsystem = new IntakeSubsystem();
         this.shooterSubsystem = new ShooterSubsystem();
         this.firingPins = new FiringPins();
-        this.lazySusanSubsystem = new LazySusanSubsystem(this.drivetrain::getPose);
+        this.turretSubsystem = new TurretSubsystem(this.drivetrain::getPose);
         this.climberSubsystem = new ClimberSubsystem();
         this.ledSubsystem = new LEDSubsystem();
 
-        SmartDashboard.putData(new InstantCommand(this.lazySusanSubsystem::setHomePosition));
-        SmartDashboard.putData(new ZeroTurnTable(this.lazySusanSubsystem));
+        SmartDashboard.putData(new InstantCommand(this.turretSubsystem::setHomePosition));
+        SmartDashboard.putData(new CalibrateTurret(this.turretSubsystem));
     }
 
     private void initControls() {
@@ -109,17 +108,17 @@ public class RobotContainer {
 
         ControlBoard.aimTurretTrigger.whileActiveOnce(new ParallelCommandGroup(
                 new LimelightSpinUp(this.getShooterSubsystem()),
-                new TurretAimingPID(this.getLazySusanSubsystem(), this.getRobotField(), this.getDrivetrain()::getPose)
+                new TurretAimingPID(this.getTurretSubsystem(), this.getRobotField(), this.getDrivetrain()::getPose)
         ));
 
         ControlBoard.tankDriveAimButton.whileActiveOnce(new ParallelCommandGroup(
                 new LimelightSpinUp(this.getShooterSubsystem()),
-                new TankDriveAiming(this.getDrivetrain())
+                new TankDriveAiming(this.getDrivetrain(), this.getTurretSubsystem())
         ));
 
         ControlBoard.toggleGyroButton.whenPressed(new InstantCommand(() -> {
-            this.getLazySusanSubsystem().setIsGyroLocking(!this.getLazySusanSubsystem().getIsGyroLocking());
-            this.getLazySusanSubsystem().setIsHubTracking(!this.getLazySusanSubsystem().getIsHubTracking());
+            this.getTurretSubsystem().setIsGyroLocking(!this.getTurretSubsystem().getIsGyroLocking());
+            this.getTurretSubsystem().setIsHubTracking(!this.getTurretSubsystem().getIsHubTracking());
         }));
 
         ControlBoard.fireTurretTrigger.whenActive(new ParallelCommandGroup(  
@@ -128,17 +127,12 @@ public class RobotContainer {
         ));
 
         ControlBoard.reverseShooterWheelsButton.whenPressed(
-            new InstantCommand(() -> this.getShooterSubsystem().setIsBackwards(true))
-        );
-
-        ControlBoard.reverseShooterWheelsButton.whenReleased(
-            new InstantCommand(() -> this.getShooterSubsystem().setIsBackwards(false))
-        );
+            new InstantCommand(() -> this.getShooterSubsystem().setIsBackward(true))
+        ).whenReleased(new InstantCommand(() -> this.getShooterSubsystem().setIsBackward(false)));
 
         ControlBoard.lowShotButton.whileActiveOnce(
-            new InstantCommand(() -> this.getShooterSubsystem().setTargetRPM(Constants.lowPoweredShotRPM))
-            .andThen(new InstantCommand(this.getShooterSubsystem()::stopMotors))
-        );
+            new InstantCommand(() -> this.getShooterSubsystem().setTargetRPM(ShooterConstants.LOW_POWERED_SHOT_RPM))
+        ).whenInactive(new InstantCommand(this.getShooterSubsystem()::stopMotors));
 
         ControlBoard.intakeButton.whileActiveOnce(new SmartIntake(this.getIntakeSubsystem()));
         ControlBoard.extakeButton.whileActiveOnce(new ControlIntake(this.getIntakeSubsystem(), IntakeMotion.EXTAKE));
@@ -146,17 +140,17 @@ public class RobotContainer {
 
     public void initAuto() {
         this.autoSelector.setDefaultOption("Two-Ball", new TwoBalls(
-            this, this.getDrivetrain(), this.getLazySusanSubsystem(), 
+            this, this.getDrivetrain(), this.getTurretSubsystem(), 
             this.getShooterSubsystem(), this.getFiringPins(), this.getIntakeSubsystem()
         ));
         
         this.autoSelector.addOption("One-Ball", new OneBall(
-            this.getDrivetrain(), this.getLazySusanSubsystem(),
+            this.getDrivetrain(), this.getTurretSubsystem(),
             this.getShooterSubsystem(), this.getFiringPins(), this.getIntakeSubsystem()
         ));
 
         this.autoSelector.addOption("Taxi", new Taxi(
-            this.getDrivetrain(), this.getIntakeSubsystem(), this.getLazySusanSubsystem()
+            this.getDrivetrain(), this.getIntakeSubsystem(), this.getTurretSubsystem()
         ));
 
         this.autoSelector.addOption("Extake-Ball", new ExtakeBall(this.getIntakeSubsystem()));
@@ -165,8 +159,7 @@ public class RobotContainer {
     }
 
     public void init() {
-        this.lazySusanSubsystem.setDefaultCommand(new ManualAimingPID(this.lazySusanSubsystem, ControlBoard.getOperatorController()));
-        this.ledSubsystem.setDefaultCommand(new LEDIdleCommand(this.ledSubsystem, this.intakeSubsystem, this.firingPins, this.lazySusanSubsystem));
+        this.ledSubsystem.setDefaultCommand(new LEDIdleCommand(this.ledSubsystem, this.intakeSubsystem, this.firingPins, this.turretSubsystem));
         SmartDashboard.putData(robotFieldWidget);
         robotFieldWidget.getObject("Turret").setPose(new Pose2d());
     }
@@ -180,7 +173,7 @@ public class RobotContainer {
         DataLogManager.log(
             "LeftRPM: " + this.getShooterSubsystem().getLeftRPM() 
             + " RightRPM: " + this.getShooterSubsystem().getRightRPM() 
-            + " RPMSetpoint: " + this.getShooterSubsystem().getSetpoint() 
+            + " RPMSetpoint: " + this.getShooterSubsystem().getTargetRPM() 
             + " AtSetpoint: " + this.getShooterSubsystem().atTargetRPM() 
             + " X LimeLight: " + Limelight.getTX() 
             + " Y LimeLight: " + Limelight.getTY() 
@@ -194,8 +187,8 @@ public class RobotContainer {
         return this.climberSubsystem;
     }
 
-    public LazySusanSubsystem getLazySusanSubsystem() {
-        return this.lazySusanSubsystem;
+    public TurretSubsystem getTurretSubsystem() {
+        return this.turretSubsystem;
     }
 
     public Drivetrain getDrivetrain() {
@@ -224,8 +217,8 @@ public class RobotContainer {
     }
 
     public void calibrateTurntable() {
-        if (!this.getLazySusanSubsystem().getIsCal()) {
-            new ZeroTurnTable(this.getLazySusanSubsystem()).schedule();
+        if (!this.getTurretSubsystem().getIsCalibrated()) {
+            new CalibrateTurret(this.getTurretSubsystem()).schedule();
         }
     }
 

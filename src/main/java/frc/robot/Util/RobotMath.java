@@ -2,63 +2,55 @@ package frc.robot.Util;
 
 import java.util.function.BiConsumer;
 
-public abstract class RobotMath
-{
-	public static double linearMap(double n, double sourceMin, double sourceMax, double outputMin, double outputMax)
-	{
+public class RobotMath {
+	public static double linearMap(double n, double sourceMin, double sourceMax, double outputMin, double outputMax) {
 		return (n - sourceMin) / (sourceMax - sourceMin) * (outputMax - outputMin) + outputMin;
 	}
-	
-	public static double xKinkedMap(double n, double sourceMin, double sourceMax, double flatVal, double flatStart, double flatEnd, double outputMin, double outputMax)
-	{
-		if(n < flatStart)
+
+	public static double xKinkedMap(double n, double sourceMin, double sourceMax, double flatVal, double flatStart, double flatEnd, double outputMin, double outputMax) {
+		if (n < flatStart)
 			return linearMap(n, sourceMin, flatStart, outputMin, flatVal);
-		else if(n > flatEnd)
+		else if (n > flatEnd)
 			return linearMap(n, flatEnd, sourceMax, flatVal, outputMax);
 		else
 			return flatVal;
 	}
-	
-	public static double yKinkedMap(double n, double sourceMin, double sourceMax, double jumpN, double jumpMin, double jumpMax, double outputMin, double outputMax)
-	{
-		if(n < jumpN)
+
+	public static double yKinkedMap(double n, double sourceMin, double sourceMax, double jumpN, double jumpMin, double jumpMax, double outputMin, double outputMax) {
+		if (n < jumpN)
 			return linearMap(n, sourceMin, jumpN, outputMin, jumpMin);
-		else if(n > jumpN)
+		else if (n > jumpN)
 			return linearMap(n, jumpN, sourceMax, jumpMax, outputMax);
 		else
 			return (jumpMin + jumpMax) / 2;
 	}
-	
-	public static double curve(double n, double curve)
-	{
+
+	public static double curve(double n, double curve) {
 		return Math.copySign(Math.pow(Math.abs(n), curve), n);
 	}
-	
-	public static double constrain(double n, double lowerBound, double upperBound)
-	{
-		if(lowerBound > upperBound)
+
+	public static double constrain(double n, double lowerBound, double upperBound) {
+		if (lowerBound > upperBound)
 			return constrain(n, upperBound, lowerBound);
 		
-		if(n < lowerBound)
+		if (n < lowerBound)
 			return lowerBound;
 		
-		if(n > upperBound)
+		if (n > upperBound)
 			return upperBound;
 		
 		return n;
 	}
-	
-	public static boolean oneNonZero(double... numbers)
-	{
+
+	public static boolean isOneNonZero(double... numbers) {
 		for (double n : numbers)
 			if (n != 0)
 				return true;
 		
 		return false;
 	}
-	
-	public static <T> void linkNextAndPrevWithSelfReferencingCaps(T[] array, BiConsumer<T, T> setNext, BiConsumer<T, T> setPrev)
-	{
+
+	public static <T> void linkNextAndPrevWithSelfReferencingCaps(T[] array, BiConsumer<T, T> setNext, BiConsumer<T, T> setPrev) {
 		T first = array[0];
 		setPrev.accept(first, first);
 		
@@ -70,7 +62,16 @@ public abstract class RobotMath
 		T last = array[array.length - 1];
 		setNext.accept(last, last);
 	}
-    public static double deadZone(double value, double deadZone, double endZone){
+
+    public static double deadZone(double value, double deadZone, double endZone) {
 		return RobotMath.xKinkedMap(value, -1, 1, 0, -deadZone, deadZone, -1, 1);
 	}
+
+	public static boolean withinValues(double val, double bound1, double bound2) {
+        return (bound1 >= val && val >= bound2) || (bound1 <= val && val <= bound2);
+    }
+
+    public static boolean isWithinTolerance(double val, double target, double tolerance) {
+        return withinValues(val, target * (1 + tolerance), target * (1 - tolerance));
+    }
 }

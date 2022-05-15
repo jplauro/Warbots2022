@@ -13,11 +13,11 @@ import frc.robot.Intake.IntakeSubsystem;
 import frc.robot.Intake.ControlIntake.IntakeMotion;
 import frc.robot.Shooter.ActivateFiringPins;
 import frc.robot.Shooter.FiringPins;
-import frc.robot.Shooter.LazySusanSubsystem;
 import frc.robot.Shooter.LimelightSpinUp;
 import frc.robot.Shooter.ShooterSubsystem;
-import frc.robot.Shooter.TurretAimingPID;
-import frc.robot.Shooter.ZeroTurnTable;
+import frc.robot.Turret.TurretSubsystem;
+import frc.robot.Turret.TurretAimingPID;
+import frc.robot.Turret.CalibrateTurret;
 import frc.robot.Util.Limelight;
 import frc.robot.Util.Limelight.LedMode;
 
@@ -28,21 +28,21 @@ public class TwoBalls extends SequentialCommandGroup {
     private final double TAXI_DISTANCE = 1.6;
     private final int INTAKE_FRAMES = 100;
 
-    public TwoBalls(RobotContainer robotContainer, Drivetrain drivetrain, LazySusanSubsystem lazySusanSubsystem,
+    public TwoBalls(RobotContainer robotContainer, Drivetrain drivetrain, TurretSubsystem turretSubsystem,
     ShooterSubsystem shooterSubsystem, FiringPins firingPins, IntakeSubsystem intakeSubsystem) {
-        addRequirements(drivetrain, lazySusanSubsystem, shooterSubsystem, firingPins, intakeSubsystem);
+        addRequirements(drivetrain, turretSubsystem, shooterSubsystem, firingPins, intakeSubsystem);
         addCommands(
             parallel(
                 new LimelightSpinUp(shooterSubsystem),
                 sequence(
                     parallel(
                         // Only calibrate if not already calibrated
-                        new ConditionalCommand(new ZeroTurnTable(lazySusanSubsystem),
-                            new InstantCommand(), lazySusanSubsystem::getIsCal),
+                        new ConditionalCommand(new CalibrateTurret(turretSubsystem),
+                            new InstantCommand(), turretSubsystem::getIsCalibrated),
                         new DriveDistance(drivetrain, this.FIRST_SHOT_DISTANCE, DriveDirection.FORWARD)
                     ),
                     new WaitCommand(2),
-                    new TurretAimingPID(lazySusanSubsystem, robotContainer.getRobotField(), 
+                    new TurretAimingPID(turretSubsystem, robotContainer.getRobotField(), 
                         drivetrain::getPose, 100, false),
                     new ActivateFiringPins(firingPins, intakeSubsystem),
                     parallel(
@@ -50,7 +50,7 @@ public class TwoBalls extends SequentialCommandGroup {
                         new DriveDistance(drivetrain, this.SECOND_SHOT_DISTANCE, DriveDirection.FORWARD)
                     ),
                     new DriveDistance(drivetrain, this.SECOND_SHOT_DISTANCE, DriveDirection.BACKWARD),
-                    new TurretAimingPID(lazySusanSubsystem, robotContainer.getRobotField(), 
+                    new TurretAimingPID(turretSubsystem, robotContainer.getRobotField(), 
                         drivetrain::getPose, 100, false),
                     new ActivateFiringPins(firingPins, intakeSubsystem),
                     new WaitCommand(1),

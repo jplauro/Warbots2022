@@ -10,21 +10,21 @@ import frc.robot.Drive.Drivetrain;
 import frc.robot.Intake.IntakeSubsystem;
 import frc.robot.Shooter.ActivateFiringPins;
 import frc.robot.Shooter.FiringPins;
-import frc.robot.Shooter.LazySusanSubsystem;
 import frc.robot.Shooter.LimelightSpinUp;
 import frc.robot.Shooter.ShooterSubsystem;
-import frc.robot.Shooter.ZeroTurnTable;
+import frc.robot.Turret.TurretSubsystem;
+import frc.robot.Turret.CalibrateTurret;
 
 public class OneBall extends SequentialCommandGroup {
     private final double FIRST_SHOT_DISTANCE = 2; // In meters
 
-    public OneBall(Drivetrain drivetrain, LazySusanSubsystem lazySusanSubsystem,
+    public OneBall(Drivetrain drivetrain, TurretSubsystem turretSubsystem,
     ShooterSubsystem shooterSubsystem, FiringPins firingPins, IntakeSubsystem intakeSubsystem) {
-        addRequirements(drivetrain, lazySusanSubsystem, shooterSubsystem, firingPins, intakeSubsystem);
+        addRequirements(drivetrain, turretSubsystem, shooterSubsystem, firingPins, intakeSubsystem);
         addCommands(
             parallel(
-                new ConditionalCommand(new ZeroTurnTable(lazySusanSubsystem), 
-                    new InstantCommand(), lazySusanSubsystem::getIsCal),
+                new ConditionalCommand(new CalibrateTurret(turretSubsystem), 
+                    new InstantCommand(), turretSubsystem::getIsCalibrated),
                 new DriveDistance(drivetrain, this.FIRST_SHOT_DISTANCE, DriveDirection.FORWARD)
             ),
             new WaitCommand(1),

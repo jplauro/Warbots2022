@@ -9,15 +9,14 @@ public class ActivateFiringPins extends CommandBase {
     private int frames;
 
     public ActivateFiringPins(FiringPins firingPins, IntakeSubsystem intakeSubsystem) {
-        addRequirements(intakeSubsystem);
         this.firingPins = firingPins;
         this.intakeSubsystem = intakeSubsystem;
+        addRequirements(this.firingPins, this.intakeSubsystem);
     }
 
     @Override
     public void initialize() {
         this.frames = 0;
-        System.out.println("Ball was shot");
         this.intakeSubsystem.enableInnerIntakeMotor();
     }
 
@@ -36,6 +35,6 @@ public class ActivateFiringPins extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return frames >= 60;
+        return this.frames >= 60;
     }
 }

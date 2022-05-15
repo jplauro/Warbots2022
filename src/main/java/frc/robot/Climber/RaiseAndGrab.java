@@ -14,7 +14,7 @@ public class RaiseAndGrab extends SequentialCommandGroup {
         addCommands(
             parallel(
                 new ControlWinch(climberSubsystem, intakeSubsystem, 
-                ClimberConstants.WINCH_LIMIT_MAX / 2, WinchMotion.RETRACT),
+                    ClimberConstants.WINCH_LIMIT_MAX / 2, WinchMotion.RETRACT),
                 new ControlPistons(climberSubsystem, PistonMotion.LOWER)
             ),
             new InstantCommand(() -> climberSubsystem.setHangingSolenoid(true)).withTimeout(0.3), // Lower hooks for 15 frames

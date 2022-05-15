@@ -7,17 +7,17 @@ import frc.robot.Drive.DriveDirection;
 import frc.robot.Drive.DriveDistance;
 import frc.robot.Drive.Drivetrain;
 import frc.robot.Intake.IntakeSubsystem;
-import frc.robot.Shooter.LazySusanSubsystem;
-import frc.robot.Shooter.ZeroTurnTable;
+import frc.robot.Turret.TurretSubsystem;
+import frc.robot.Turret.CalibrateTurret;
 
 public class Taxi extends ParallelCommandGroup {
     private final double TAXI_DISTANCE = 2; // In meters
 
-    public Taxi(Drivetrain drivetrain, IntakeSubsystem intakeSubsystem, LazySusanSubsystem lazySusanSubsystem) {
-        addRequirements(drivetrain, intakeSubsystem, lazySusanSubsystem);
+    public Taxi(Drivetrain drivetrain, IntakeSubsystem intakeSubsystem, TurretSubsystem turretSubsystem) {
+        addRequirements(drivetrain, intakeSubsystem, turretSubsystem);
         addCommands(
-            new ConditionalCommand(new ZeroTurnTable(lazySusanSubsystem),
-                    new InstantCommand(), lazySusanSubsystem::getIsCal),
+            new ConditionalCommand(new CalibrateTurret(turretSubsystem),
+                    new InstantCommand(), turretSubsystem::getIsCalibrated),
             new DriveDistance(drivetrain, this.TAXI_DISTANCE, DriveDirection.FORWARD)
         );
     }

@@ -11,10 +11,10 @@ public class ExtendArmsAndStow extends SequentialCommandGroup {
         addCommands(
             new ControlPistons(climberSubsystem, 0.1, PistonMotion.RAISE), // Bump the arms up slightly
             new ControlWinch(climberSubsystem, intakeSubsystem, 
-            ClimberConstants.WINCH_LIMIT_MAX / 2, WinchMotion.EXTEND),
+                ClimberConstants.WINCH_LIMIT_MAX / 2, WinchMotion.EXTEND),
             new ControlPistons(climberSubsystem, 0.1, PistonMotion.LOWER),
             new ControlWinch(climberSubsystem, intakeSubsystem, 
-            ClimberConstants.WINCH_LIMIT_MAX / 2, WinchMotion.EXTEND)
+                ClimberConstants.WINCH_LIMIT_MAX / 2, WinchMotion.EXTEND)
         );
     }
 }

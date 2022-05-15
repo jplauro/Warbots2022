@@ -2,45 +2,42 @@ package frc.robot.Shooter;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.Controls.ControlBoard;
 import frc.robot.Util.Limelight;
 import frc.robot.Util.Limelight.LedMode;
 
 public class SetpointSpinUp extends CommandBase {
-    protected ShooterSubsystem shooterSubsystem;
-    protected double offsetY;
+    private final ShooterSubsystem shooterSubsystem;
+    private final double offsetY;
     private Timer timer;
 
     public SetpointSpinUp(ShooterSubsystem shooterSubsystem, double offsetY) {
-
         this.shooterSubsystem = shooterSubsystem;
         this.offsetY = offsetY;
-        addRequirements(shooterSubsystem);
+        addRequirements(this.shooterSubsystem);
+    }
+
+    @Override
+    public void initialize() {
+        this.timer = new Timer();
+        this.timer.start();
     }
 
     @Override
     public void execute() {
-        shooterSubsystem.setTargetRPM(Constants.rpmMap.get(offsetY));
-        ControlBoard.setOperatorRumble(getWithinTolerance());
+        this.shooterSubsystem.setTargetRPM(ShooterConstants.RPM_MAP.get(this.offsetY));
+        ControlBoard.setOperatorRumble(this.shooterSubsystem.isWithinTolerance());
     }
 
-    private boolean getWithinTolerance() {
-        return ShooterMath.withinTolerance(
-            this.shooterSubsystem.getRPM(), 
-            this.shooterSubsystem.getTargetRPM(), 
-            Constants.shooterVibrationTolerance);
-    }
-    
     @Override
     public boolean isFinished() {
-        return timer.hasElapsed(2);
+        return this.timer.hasElapsed(2);
     }
 
     @Override
-    public void end(boolean interrupt) {
-        shooterSubsystem.setTargetRPM(0);
-        Limelight.setLedMode(LedMode.OFF);
+    public void end(boolean interrupted) {
+        this.shooterSubsystem.setTargetRPM(0);
         ControlBoard.setOperatorRumble(false);
+        Limelight.setLedMode(LedMode.OFF);
     }
 }

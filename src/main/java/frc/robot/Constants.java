@@ -2,8 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.I2C;
-import frc.robot.Util.LinearInterpolationMap;
 
 public final class Constants {
     public static final double ksVolts = 0.13271;// 0.16249 0.13271
@@ -27,59 +25,19 @@ public final class Constants {
 
     public static final double wheelDiameterInInches = 6; // TODO: Be more clear on if this is A drive wheel or shooter wheel
     public static final double inchesToMetersFactor = 0.0254; // TODO: remove use Units.inchestoMeter
-    public static final double shooterGearRatio = 1;
     public static final double gearRatio = 0.12;
 
     public static final double motorRotationsPerTurntableRotation = 104.0;
 
     public static final double limelightHeight = 0.69; // based on last year's robot
     public static final double hubHeight = 2.7178;
-    public static final double azimuthAngle1 = 40; // mount angle of the limelight
+    public static final double limelightAngle = 40; // mount angle of the limelight
     public static final double metersToFeet = 3.28084;
 
-    public static final double lowPoweredShotRPM = 1200;
-
-    // shooter CAN IDs
-    public static final int leftShooterMotorID = 5;
-    public static final int rightShooterMotorID = 6;
-
-    // lazysusan CAN IDs
-    public static final int lazySusanID = 9;
-
-    // Shooter
-    public static final int minShooterRPM = 0;
-    public static final int maxShooterRPM = 5500;
-    public static final double maxShootingDistance = 4.0;
-    public static final double shooterVibrationTolerance = 0.03;
     public static final double driverRumbleLowFreq = 1.0;
     public static final double driverRumbleHighFreq = 0.1;
     public static final double operatorRumbleLowFreq = 1.0;
     public static final double operatorRumbleHighFreq = 0.1;
-    public static final double limeLightTolerance = 0.2; // Measured in degrees
-
-    //Lazy susan
-    public static final int calSwitchID = 9;
-
-    public static final I2C.Port i2cColorSensorPort = I2C.Port.kMXP;
-    public static final int minColorSensorProximity = 100; // Increases with proximity
-
-    // This maps the LimeLight's Vertical Offset (tY) to RPM
-    public static final LinearInterpolationMap rpmMap = new LinearInterpolationMap() {{
-        put(7.7, 2458.0);
-        put(-0.4, 2682.0);
-        put(-6.7, 2990.0);
-        put(-12.3, 3375.0);
-        put(-16.38, 3663.0);
-        put(-19.09, 3930.0);
-        put(-20.39, 4302.0);
-        put(-22.13, 4575.0);
-    }};
-
-    // LazySusan
-    public static final int turntableThresh = 45; // This is in encoder ticks
-    // The below is in absolute degrees relative to the turntable
-    // To be within frame perimeter, the turret must face backwards
-    public static final double stowedDegrees = 0;
 
     // Differential Constants (very cool)
     public static final double diffConstLS = 0.014;//0.012 0.014
@@ -88,9 +46,6 @@ public final class Constants {
     public static final double diffConstKeepPosition = 0.00001; // TODO: Test this constant and optimize it
     public static final double diffConstTurn = 0.008;
 
-    public static final double diffConstTankDriveAim = 0.014;
-
-    public static final double leftBias = 1.3;
     // Sim Vars
     public static final double kSimGearRatio = Constants.gearRatio;
     public static final double kSimTrackwidthMeters = Constants.kTrackwidthMeters;

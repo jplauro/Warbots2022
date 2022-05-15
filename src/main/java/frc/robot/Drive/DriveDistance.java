@@ -40,7 +40,7 @@ public class DriveDistance extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupt) {
+    public void end(boolean interrupted) {
         this.drivetrain.arcadeDriveSet(0, 0);
     }
 }
