@@ -1,4 +1,4 @@
-package frc.robot.Drive;
+package frc.robot.drive;
 
 public class DriveConstants {
     public static final int FRONT_LEFT_MOTOR_ID = 4;

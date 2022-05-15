@@ -1,4 +1,4 @@
-package frc.robot.Intake;
+package frc.robot.intake;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;

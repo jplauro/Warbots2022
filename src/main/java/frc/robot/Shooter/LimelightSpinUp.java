@@ -1,8 +1,8 @@
-package frc.robot.Shooter;
+package frc.robot.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Util.Limelight;
-import frc.robot.Util.Limelight.LedMode;
+import frc.robot.util.Limelight;
+import frc.robot.util.Limelight.LedMode;
 
 public class LimelightSpinUp extends CommandBase {
     private final ShooterSubsystem shooterSubsystem;

@@ -1,7 +1,7 @@
-package frc.robot.Shooter;
+package frc.robot.shooter;
 
 import edu.wpi.first.wpilibj.I2C;
-import frc.robot.Util.LinearInterpolationMap;
+import frc.robot.util.LinearInterpolationMap;
 
 public class ShooterConstants {
     public static final int LEFT_SHOOTER_MOTOR_ID = 5;

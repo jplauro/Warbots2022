@@ -1,11 +1,11 @@
-package frc.robot.Climber;
+package frc.robot.climber;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Climber.ControlPistons.PistonMotion;
-import frc.robot.Climber.ControlWinch.WinchMotion;
-import frc.robot.Intake.IntakeSubsystem;
+import frc.robot.climber.ControlPistons.PistonMotion;
+import frc.robot.climber.ControlWinch.WinchMotion;
+import frc.robot.intake.IntakeSubsystem;
 
 public class RaiseAndGrab extends SequentialCommandGroup {
     private final int RAISE_HOOKS_FRAMES = 100;

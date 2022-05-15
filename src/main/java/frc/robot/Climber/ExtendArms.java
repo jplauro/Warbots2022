@@ -1,9 +1,9 @@
-package frc.robot.Climber;
+package frc.robot.climber;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Climber.ControlPistons.PistonMotion;
-import frc.robot.Climber.ControlWinch.WinchMotion;
-import frc.robot.Intake.IntakeSubsystem;
+import frc.robot.intake.IntakeSubsystem;
+import frc.robot.climber.ControlPistons.PistonMotion;
+import frc.robot.climber.ControlWinch.WinchMotion;
 
 public class ExtendArms extends SequentialCommandGroup {
     public ExtendArms(ClimberSubsystem climberSubsystem, 

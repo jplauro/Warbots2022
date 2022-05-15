@@ -1,7 +1,7 @@
-package frc.robot.Shooter;
+package frc.robot.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Intake.IntakeSubsystem;
+import frc.robot.intake.IntakeSubsystem;
 
 public class ActivateFiringPins extends CommandBase {
     private final FiringPins firingPins;

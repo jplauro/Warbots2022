@@ -1,12 +1,12 @@
-package frc.robot.Util.LEDs;
+package frc.robot.util.leds;
 
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Intake.IntakeSubsystem;
-import frc.robot.Shooter.FiringPins;
-import frc.robot.Turret.TurretSubsystem;
-import frc.robot.Util.LEDs.LEDSubsystem.LEDAnimation;
-import frc.robot.Util.LEDs.LEDSubsystem.LEDManager;
+import frc.robot.intake.IntakeSubsystem;
+import frc.robot.shooter.FiringPins;
+import frc.robot.turret.TurretSubsystem;
+import frc.robot.util.leds.LEDSubsystem.LEDAnimation;
+import frc.robot.util.leds.LEDSubsystem.LEDManager;
 
 public class LEDIdleCommand extends CommandBase {
     protected IntakeSubsystem intakeSubsystem;

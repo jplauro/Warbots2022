@@ -1,4 +1,4 @@
-package frc.robot.Util.LEDs;
+package frc.robot.util.leds;
 
 import java.util.function.Consumer;
 

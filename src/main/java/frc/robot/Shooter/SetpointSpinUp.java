@@ -1,10 +1,10 @@
-package frc.robot.Shooter;
+package frc.robot.shooter;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Controls.ControlBoard;
-import frc.robot.Util.Limelight;
-import frc.robot.Util.Limelight.LedMode;
+import frc.robot.controls.ControlBoard;
+import frc.robot.util.Limelight;
+import frc.robot.util.Limelight.LedMode;
 
 public class SetpointSpinUp extends CommandBase {
     private final ShooterSubsystem shooterSubsystem;

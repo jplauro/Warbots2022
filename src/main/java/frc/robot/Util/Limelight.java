@@ -1,4 +1,4 @@
-package frc.robot.Util;
+package frc.robot.util;
 
 import java.util.Arrays;
 import java.util.Map;

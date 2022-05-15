@@ -1,4 +1,4 @@
-package frc.robot.Controls;
+package frc.robot.controls;
 
 public final class ControlConstants {
     public static final int DRIVER_CONTROLLER_ID = 0;

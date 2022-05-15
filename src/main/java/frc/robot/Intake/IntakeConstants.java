@@ -1,4 +1,4 @@
-package frc.robot.Intake;
+package frc.robot.intake;
 
 public class IntakeConstants {
     public static final int INNER_INTAKE_MOTOR_ID = 10;

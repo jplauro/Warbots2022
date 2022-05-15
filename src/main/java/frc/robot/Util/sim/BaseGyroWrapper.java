@@ -1,4 +1,4 @@
-package frc.robot.Util.sim;
+package frc.robot.util.sim;
 
 import java.util.function.DoubleConsumer;
 

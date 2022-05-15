@@ -1,4 +1,4 @@
-package frc.robot.Drive;
+package frc.robot.drive;
 
 public enum DriveDirection {
     BACKWARD(-1),

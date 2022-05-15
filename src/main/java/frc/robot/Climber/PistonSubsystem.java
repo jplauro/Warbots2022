@@ -1,4 +1,4 @@
-package frc.robot.Climber;
+package frc.robot.climber;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;

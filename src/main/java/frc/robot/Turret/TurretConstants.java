@@ -1,4 +1,4 @@
-package frc.robot.Turret;
+package frc.robot.turret;
 
 public class TurretConstants {
     public static final int TURRET_MOTOR_ID = 9;

@@ -1,4 +1,4 @@
-package frc.robot.Climber;
+package frc.robot.climber;
 
 public class ClimberConstants {
     public static final int LEFT_WINCH_MOTOR_ID = 7;

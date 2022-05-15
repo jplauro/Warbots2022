@@ -1,4 +1,4 @@
-package frc.robot.Util.sim;
+package frc.robot.util.sim;
 
 public interface TelemetryProvider {
     public void updateTelemetry();

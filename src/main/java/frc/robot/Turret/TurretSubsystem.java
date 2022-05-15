@@ -1,4 +1,4 @@
-package frc.robot.Turret;
+package frc.robot.turret;
 
 import java.util.function.Supplier;
 
@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Util.sim.RevEncoderSimWrapper;
+import frc.robot.util.sim.RevEncoderSimWrapper;
 
 public class TurretSubsystem extends SubsystemBase {
     private final SimableCANSparkMax motor;

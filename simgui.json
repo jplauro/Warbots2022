@@ -13,24 +13,25 @@
       },
       "RoboRIO Input": {
         "open": true
-      },
+      }
+    },
+    "Timing": {
       "window": {
-        "visible": true
+        "visible": false
       }
     }
   },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/LiveWindow/ClimberMotorsSubsystem": "Subsystem",
       "/LiveWindow/ClimberSubsystem": "Subsystem",
       "/LiveWindow/Drivetrain": "Subsystem",
       "/LiveWindow/FiringPins": "Subsystem",
-      "/LiveWindow/Intake": "Subsystem",
+      "/LiveWindow/IntakeSubsystem": "Subsystem",
       "/LiveWindow/LEDSubsystem": "Subsystem",
-      "/LiveWindow/LazySusanSubsystem": "Subsystem",
-      "/LiveWindow/LoaderSubsystem": "Subsystem",
+      "/LiveWindow/PistonSubsystem": "Subsystem",
       "/LiveWindow/ShooterSubsystem": "Subsystem",
+      "/LiveWindow/TurretSubsystem": "Subsystem",
       "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
       "/LiveWindow/Ungrouped/DigitalInput[7]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[8]": "Digital Input",
@@ -40,6 +41,7 @@
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/navX-Sensor[1]": "Gyro",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Flywheel/Left/PIDControler[10]": "PIDController",
       "/SmartDashboard/Flywheel/Right/PIDControler[11]": "PIDController",
@@ -48,6 +50,9 @@
       "/SmartDashboard/PIDController[3]": "PIDController",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/SendableChooser[1]": "String Chooser",
+      "/SmartDashboard/Shooter/Left PID Controller": "PIDController",
+      "/SmartDashboard/Shooter/Right PID Controller": "PIDController",
+      "/SmartDashboard/Turret/PID Controller": "PIDController",
       "/SmartDashboard/Turret/PIDController[12]": "PIDController",
       "/SmartDashboard/ZeroTurnTable": "Command",
       "/SmartDashboard/driver": "String Chooser",
@@ -57,11 +62,6 @@
       "/SmartDashboard/test/PIDControler[4]": "PIDController"
     },
     "windows": {
-      "/LiveWindow/Ungrouped/DifferentialDrive[1]": {
-        "window": {
-          "visible": true
-        }
-      },
       "/LiveWindow/Ungrouped/Scheduler": {
         "window": {
           "visible": true
@@ -131,7 +131,7 @@
     "Plot <0>": {
       "plots": [
         {
-          "height": 382,
+          "height": -6,
           "series": [
             {
               "color": [
@@ -173,13 +173,14 @@
         }
       ],
       "window": {
-        "name": "Flywheel RPM plot"
+        "name": "Flywheel RPM plot",
+        "visible": false
       }
     },
     "Plot <1>": {
       "plots": [
         {
-          "height": 216,
+          "height": -4,
           "series": [
             {
               "color": [
@@ -202,7 +203,7 @@
           ]
         },
         {
-          "height": 216,
+          "height": -4,
           "series": [
             {
               "color": [
@@ -215,7 +216,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     }
   }
 }

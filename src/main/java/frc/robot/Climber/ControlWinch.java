@@ -1,7 +1,7 @@
-package frc.robot.Climber;
+package frc.robot.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Intake.IntakeSubsystem;
+import frc.robot.intake.IntakeSubsystem;
 
 public class ControlWinch extends CommandBase {
     public enum WinchMotion {

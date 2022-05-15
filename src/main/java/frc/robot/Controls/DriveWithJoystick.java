@@ -1,8 +1,8 @@
-package frc.robot.Controls;
+package frc.robot.controls;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Drive.Drivetrain;
+import frc.robot.drive.Drivetrain;
 
 public class DriveWithJoystick extends CommandBase {
     private final Drivetrain drivetrain;
@@ -27,12 +27,9 @@ public class DriveWithJoystick extends CommandBase {
 
         double leftTriggerInput = Math.pow(ControlBoard.backwardTrigger.getAsDouble(), this.power);
         double rightTriggerInput = Math.pow(ControlBoard.forwardTrigger.getAsDouble(), this.power);
-        double rotationInput = Math.pow(ControlBoard.rotationJoystick.getAsDouble(), this.power);
-
-        // Only apply the original sign if the power is even
-        if (this.power % 2 == 0) {
-            rotationInput *= Math.signum(ControlBoard.rotationJoystick.getAsDouble());
-        }
+        // This squares the inputs and applies the sign only for an even power
+        double rotationInput = Math.pow(ControlBoard.rotationJoystick.getAsDouble(), this.power)
+        * (this.power % 2 == 0 ? Math.signum(ControlBoard.rotationJoystick.getAsDouble()) : 1);
 
         double direction = rightTriggerInput > leftTriggerInput ? rightTriggerInput : -leftTriggerInput;
         double speed = direction * this.modSpeed;

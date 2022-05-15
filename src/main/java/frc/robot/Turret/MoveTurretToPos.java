@@ -1,4 +1,4 @@
-package frc.robot.Turret;
+package frc.robot.turret;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

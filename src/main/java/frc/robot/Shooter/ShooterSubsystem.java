@@ -1,4 +1,4 @@
-package frc.robot.Shooter;
+package frc.robot.shooter;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -17,12 +17,12 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Controls.ControlBoard;
-import frc.robot.Util.Limelight;
-import frc.robot.Util.RobotMath;
-import frc.robot.Util.sim.LimeLightPoseSim;
-import frc.robot.Util.sim.LimeLightSim;
-import frc.robot.Util.sim.RevEncoderSimWrapper;
+import frc.robot.controls.ControlBoard;
+import frc.robot.util.Limelight;
+import frc.robot.util.RobotMath;
+import frc.robot.util.sim.LimeLightPoseSim;
+import frc.robot.util.sim.LimeLightSim;
+import frc.robot.util.sim.RevEncoderSimWrapper;
 
 public class ShooterSubsystem extends SubsystemBase {
     private final SimableCANSparkMax leftShooterMotor, rightShooterMotor;
@@ -186,7 +186,7 @@ public class ShooterSubsystem extends SubsystemBase {
         this.simLimeLight = new LimeLightSim();
         Pose2d hubPos = new Pose2d(7.940, 4.08, new Rotation2d());
         this.posSim = new LimeLightPoseSim(this.simLimeLight, hubPos, 
-            Constants.limelightHeight, Constants.hubHeight, Constants.limelightAngle);
+            Constants.LIMELIGHT_HEIGHT, Constants.HUB_HEIGHT, Constants.LIMELIGHT_ANGLE);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package frc.robot.Turret;
+package frc.robot.turret;
 
 import java.util.function.Supplier;
 
@@ -9,8 +9,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.Util.Limelight;
-import frc.robot.Util.Limelight.LedMode;
+import frc.robot.util.Limelight;
+import frc.robot.util.Limelight.LedMode;
 
 public class TurretAimingPID extends CommandBase {
     private final TurretSubsystem turretSubsystem;
@@ -73,8 +73,8 @@ public class TurretAimingPID extends CommandBase {
     }
 
     private double getDistanceInMeters() {
-        return (Constants.hubHeight - Constants.limelightHeight) 
-        / Math.tan(Math.toRadians(Constants.limelightAngle + Limelight.getTY()));
+        return (Constants.HUB_HEIGHT - Constants.LIMELIGHT_HEIGHT) 
+        / Math.tan(Math.toRadians(Constants.LIMELIGHT_ANGLE + Limelight.getTY()));
     }
 
     private Pose2d getLocalPose() {

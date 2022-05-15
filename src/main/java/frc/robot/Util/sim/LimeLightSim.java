@@ -1,4 +1,4 @@
-package frc.robot.Util.sim;
+package frc.robot.util.sim;
 
 import edu.wpi.first.hal.HALValue;
 import edu.wpi.first.hal.SimBoolean;

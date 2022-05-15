@@ -1,4 +1,4 @@
-package frc.robot.Util;
+package frc.robot.util;
 
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;

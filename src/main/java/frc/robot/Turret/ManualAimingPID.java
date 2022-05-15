@@ -1,9 +1,9 @@
-package frc.robot.Turret;
+package frc.robot.turret;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Controls.ControlBoard;
-import frc.robot.Util.RobotMath;
+import frc.robot.controls.ControlBoard;
+import frc.robot.util.RobotMath;
 
 public class ManualAimingPID extends CommandBase {
     private final TurretSubsystem turretSubsystem;
