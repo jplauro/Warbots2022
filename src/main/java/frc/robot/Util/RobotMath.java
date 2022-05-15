@@ -63,15 +63,15 @@ public class RobotMath {
 		setNext.accept(last, last);
 	}
 
-    public static double deadZone(double value, double deadZone, double endZone) {
+    public static double deadZone(double value, double deadZone) {
 		return RobotMath.xKinkedMap(value, -1, 1, 0, -deadZone, deadZone, -1, 1);
 	}
 
-	public static boolean withinValues(double val, double bound1, double bound2) {
-        return (bound1 >= val && val >= bound2) || (bound1 <= val && val <= bound2);
+	public static boolean isWithinValues(double value, double bound1, double bound2) {
+        return (bound1 >= value && value >= bound2) || (bound1 <= value && value <= bound2);
     }
 
-    public static boolean isWithinTolerance(double val, double target, double tolerance) {
-        return withinValues(val, target * (1 + tolerance), target * (1 - tolerance));
+    public static boolean isWithinTolerance(double value, double target, double tolerance) {
+        return RobotMath.isWithinValues(value, target * (1 + tolerance), target * (1 - tolerance));
     }
 }

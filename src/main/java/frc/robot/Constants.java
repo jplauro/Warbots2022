@@ -34,17 +34,11 @@ public final class Constants {
     public static final double limelightAngle = 40; // mount angle of the limelight
     public static final double metersToFeet = 3.28084;
 
-    public static final double driverRumbleLowFreq = 1.0;
-    public static final double driverRumbleHighFreq = 0.1;
-    public static final double operatorRumbleLowFreq = 1.0;
-    public static final double operatorRumbleHighFreq = 0.1;
-
     // Differential Constants (very cool)
     public static final double diffConstLS = 0.014;//0.012 0.014
     public static final double diffConstAutoLS = 0.040;
     public static final double diffConstShooter = 9 * Math.pow(10, -6);
     public static final double diffConstKeepPosition = 0.00001; // TODO: Test this constant and optimize it
-    public static final double diffConstTurn = 0.008;
 
     // Sim Vars
     public static final double kSimGearRatio = Constants.gearRatio;

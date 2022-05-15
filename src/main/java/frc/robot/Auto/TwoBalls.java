@@ -37,8 +37,8 @@ public class TwoBalls extends SequentialCommandGroup {
                 sequence(
                     parallel(
                         // Only calibrate if not already calibrated
-                        new ConditionalCommand(new CalibrateTurret(turretSubsystem),
-                            new InstantCommand(), turretSubsystem::getIsCalibrated),
+                        new ConditionalCommand(new InstantCommand(),
+                            new CalibrateTurret(turretSubsystem), turretSubsystem::getIsCalibrated),
                         new DriveDistance(drivetrain, this.FIRST_SHOT_DISTANCE, DriveDirection.FORWARD)
                     ),
                     new WaitCommand(2),

@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Intake.IntakeSubsystem;
 
 public class ActivateFiringPins extends CommandBase {
-    private FiringPins firingPins;
-    private IntakeSubsystem intakeSubsystem;
+    private final FiringPins firingPins;
+    private final IntakeSubsystem intakeSubsystem;
     private int frames;
 
     public ActivateFiringPins(FiringPins firingPins, IntakeSubsystem intakeSubsystem) {

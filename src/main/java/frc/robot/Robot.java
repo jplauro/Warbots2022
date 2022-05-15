@@ -5,14 +5,12 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Shooter.TestSetpointSpinUp;
-import frc.robot.Turret.ManualAimingPID;
-import frc.robot.Turret.MoveTurretToPos;
 import frc.robot.Util.Limelight;
 import frc.robot.Util.Limelight.LedMode;
 
@@ -43,16 +41,13 @@ public class Robot extends TimedRobot {
             this.autonomousCommand.cancel();
         }
 
-        this.robotContainer.calibrateTurntable();
+        this.robotContainer.calibrateTurret();
         this.robotContainer.getIntakeSubsystem().disableInnerIntakeMotor();
         this.robotContainer.getShooterSubsystem().setOffsetSpeed(0);
         this.robotContainer.getTurretSubsystem().setMotorMode(IdleMode.kBrake);
-        this.robotContainer.setTeleopDrive();
+        this.robotContainer.initTeleopCommands();
         this.robotContainer.getDrivetrain().setBrake(true);
         this.robotContainer.getClimberSubsystem().setWinchPosition(0);
-        this.robotContainer.getTurretSubsystem().setDefaultCommand(new ManualAimingPID(
-            this.robotContainer.getTurretSubsystem(), this.robotContainer.getOperatorController()
-        ));
     }
 
     @Override
@@ -80,11 +75,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
+        LiveWindow.setEnabled(false); // This is needed to allow commands to run
         this.robotContainer.getTurretSubsystem().setMotorMode(IdleMode.kBrake);
-        this.robotContainer.getTurretSubsystem().setDefaultCommand(
-            new MoveTurretToPos(this.robotContainer.getTurretSubsystem())
-        );
-        new TestSetpointSpinUp(this.robotContainer.getShooterSubsystem()).schedule();
+        this.robotContainer.initTestCommands();
     }
 
     /**

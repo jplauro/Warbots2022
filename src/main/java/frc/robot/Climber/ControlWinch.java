@@ -32,7 +32,7 @@ public class ControlWinch extends CommandBase {
         this.deltaCounts = deltaCounts;
         this.isExtending = motion == WinchMotion.EXTEND;
         this.speed = motion.get();
-        addRequirements(this.climberSubsystem);
+        addRequirements(this.climberSubsystem, this.intakeSubsystem);
     }
 
     @Override

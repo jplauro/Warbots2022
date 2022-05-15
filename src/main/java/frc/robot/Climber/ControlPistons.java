@@ -19,27 +19,27 @@ public class ControlPistons extends CommandBase {
         }
     }
 
-    private final ClimberSubsystem climberSubsystem;
+    private final PistonSubsystem pistonSubsystem;
     private final double percent;
     private final boolean motion;
     private int frames, targetFrames;
 
-    public ControlPistons(ClimberSubsystem climberSubsystem, double percent, PistonMotion motion) {
-        this.climberSubsystem = climberSubsystem;
+    public ControlPistons(PistonSubsystem pistonSubsystem, double percent, PistonMotion motion) {
+        this.pistonSubsystem = pistonSubsystem;
         this.percent = MathUtil.clamp(percent, 0, 1);
         this.motion = motion.get();
-        addRequirements(this.climberSubsystem);
+        addRequirements(this.pistonSubsystem);
     }
 
-    public ControlPistons(ClimberSubsystem climberSubsystem, PistonMotion motion) {
-        this(climberSubsystem, 1, motion);
+    public ControlPistons(PistonSubsystem pistonSubsystem, PistonMotion motion) {
+        this(pistonSubsystem, 1, motion);
     }
 
     @Override
     public void initialize() {
         this.frames = 0;
         this.targetFrames = (int) Math.round(this.percent * ClimberConstants.PISTON_FRAMES_MAX);
-        this.climberSubsystem.setArmsSolenoid(this.motion);
+        this.pistonSubsystem.setArmsSolenoid(this.motion);
     }
 
     @Override

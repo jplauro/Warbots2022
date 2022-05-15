@@ -35,7 +35,7 @@ public class TurretSubsystem extends SubsystemBase {
     private boolean isCalibrated;
 
     private final double countsToDegreesFactor = TurretConstants.TOTAL_GEAR_RATIO
-    * TurretConstants.TOTAL_SPROCKET_TOOTH_RATIO * 360;
+    * TurretConstants.TOTAL_SPROCKET_TOOTH_RATIO * 360.0;
     private final double kP = 0.038000, kI = 0.2, kD = 0.000400;
     private final double maxIntegrator = 0.7;
 
@@ -61,27 +61,29 @@ public class TurretSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double degrees = this.findClosestSolution(this.isGyroLocking ? Rotation2d.fromDegrees(this.desiredRotation)
-        .minus(this.robotBasePose.get().getRotation()).getDegrees() : this.desiredRotation, this.getRotationDegrees());
+        if (this.getIsCalibrated()) {
+            double degrees = this.findClosestSolution(this.isGyroLocking ? Rotation2d.fromDegrees(this.desiredRotation)
+            .minus(this.robotBasePose.get().getRotation()).getDegrees() : this.desiredRotation, this.getRotationDegrees());
 
-        this.pidController.setSetpoint(MathUtil.clamp(degrees, 
-            TurretConstants.LOW_LIMIT_DEGREES, TurretConstants.HIGH_LIMIT_DEGREES));
+            this.pidController.setSetpoint(MathUtil.clamp(degrees, 
+                TurretConstants.LOW_LIMIT_DEGREES, TurretConstants.HIGH_LIMIT_DEGREES));
 
-        double pidOutput = MathUtil.clamp(this.pidController.calculate(this.encoder.getPosition()), -1, 1);
+            double pidOutput = MathUtil.clamp(this.pidController.calculate(this.encoder.getPosition()), -1, 1);
 
-        // These prevent moving into an unsafe position
-        if (this.encoder.getPosition() < TurretConstants.LOW_LIMIT_DEGREES) {
-            pidOutput = MathUtil.clamp(pidOutput, 0, 1);
+            // These prevent moving into an unsafe position
+            if (this.encoder.getPosition() < TurretConstants.LOW_LIMIT_DEGREES) {
+                pidOutput = MathUtil.clamp(pidOutput, 0, 1);
+            }
+
+            if (this.encoder.getPosition() > TurretConstants.HIGH_LIMIT_DEGREES) {
+                pidOutput = MathUtil.clamp(pidOutput, -1, 0);
+            }
+
+            this.motor.set(MathUtil.clamp(
+                pidOutput, -this.modSpeed * TurretConstants.MOD_SPEED_MAX, 
+                this.modSpeed * TurretConstants.MOD_SPEED_MAX
+            ));
         }
-
-        if (this.encoder.getPosition() > TurretConstants.HIGH_LIMIT_DEGREES) {
-            pidOutput = MathUtil.clamp(pidOutput, -1, 0);
-        }
-
-        this.motor.set(MathUtil.clamp(
-            pidOutput, -this.modSpeed * TurretConstants.MOD_SPEED_MAX, 
-            this.modSpeed * TurretConstants.MOD_SPEED_MAX
-        ));
 
         SmartDashboard.putNumber("Turret/Raw Encoder", this.encoder.getPosition());
         SmartDashboard.putNumber("Turret/Motor Percentage", this.motor.get());
@@ -98,7 +100,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     private double findClosestSolution(double targetRotation, double currentRotation) {
         double distance1 = Math.abs(targetRotation - currentRotation);
-        double solution2 = targetRotation - Math.signum(targetRotation) * 360;
+        double solution2 = targetRotation - Math.signum(targetRotation) * 360.0;
         double distance2 = Math.abs(solution2 - currentRotation);
 
         return distance2 < distance1 && solution2 > TurretConstants.LOW_LIMIT_DEGREES 
@@ -228,10 +230,8 @@ public class TurretSubsystem extends SubsystemBase {
     private double simOffset;
 
     private void initSim() {
-        this.simTurret = new DCMotorSim(
-            DCMotor.getNeo550(1), TurretConstants.TOTAL_GEAR_RATIO 
-            * TurretConstants.TOTAL_SPROCKET_TOOTH_RATIO, Constants.kSimTurntableInertia
-        );
+        this.simTurret = new DCMotorSim(DCMotor.getNeo550(1), 
+            this.countsToDegreesFactor, Constants.kSimTurntableInertia);
 
         this.simEncoder = RevEncoderSimWrapper.create(this.motor);
     }
@@ -249,16 +249,16 @@ public class TurretSubsystem extends SubsystemBase {
 
         if (this.simEncoder.getPosition() != this.simLastPos) {
             System.out.println(this.simEncoder.getPosition() + " " + this.simLastPos);
-            this.simOffset = (this.simTurret.getAngularPositionRotations() * 360) - this.simEncoder.getPosition();
+            this.simOffset = (this.simTurret.getAngularPositionRotations()) - this.simEncoder.getPosition();
             System.out.println("Turret Encoder Position Changed" + this.simOffset);
         }
 
-        this.simEncoder.setDistance((this.simTurret.getAngularPositionRotations() * 360) - this.simOffset);
+        this.simEncoder.setDistance((this.simTurret.getAngularPositionRotations()) - this.simOffset);
         // TODO: Remove magic number 5 that represents the first gear reduction
         this.simLastPos = this.simEncoder.getPosition();
 
         SmartDashboard.putNumber("Turret/Velocity", this.encoder.getVelocity());
-        SmartDashboard.putNumber("Turret/Sim Rotation", this.simTurret.getAngularPositionRotations() * 360);
+        SmartDashboard.putNumber("Turret/Sim Rotation", this.simTurret.getAngularPositionRotations());
         SmartDashboard.putNumber("Turret/Setpoint", this.pidController.getSetpoint());
     }
 }

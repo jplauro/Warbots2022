@@ -6,10 +6,11 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class MoveTurretToPos extends CommandBase {
     private final TurretSubsystem turretSubsystem;
-    private double position = TurretConstants.STOWED_DEGREES;
+    private double position;
 
     public MoveTurretToPos(TurretSubsystem turretSubsystem) {
         this.turretSubsystem = turretSubsystem;
+        this.position = this.turretSubsystem.getRotationDegrees();
         addRequirements(this.turretSubsystem);
     }
 

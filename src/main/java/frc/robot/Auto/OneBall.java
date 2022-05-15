@@ -23,8 +23,8 @@ public class OneBall extends SequentialCommandGroup {
         addRequirements(drivetrain, turretSubsystem, shooterSubsystem, firingPins, intakeSubsystem);
         addCommands(
             parallel(
-                new ConditionalCommand(new CalibrateTurret(turretSubsystem), 
-                    new InstantCommand(), turretSubsystem::getIsCalibrated),
+                new ConditionalCommand(new InstantCommand(),
+                    new CalibrateTurret(turretSubsystem), turretSubsystem::getIsCalibrated),
                 new DriveDistance(drivetrain, this.FIRST_SHOT_DISTANCE, DriveDirection.FORWARD)
             ),
             new WaitCommand(1),

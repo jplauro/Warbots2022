@@ -7,7 +7,7 @@ public class WinchHold extends CommandBase {
     private final int endFrame;
     private double frames, holdCount;
 
-    public final double winchHoldDiffConst = 0.3;
+    private final double winchHoldDiffConst = 0.3;
 
     public WinchHold(ClimberSubsystem climberSubsystem, double holdCount, int endFrame) {
         this.climberSubsystem = climberSubsystem;

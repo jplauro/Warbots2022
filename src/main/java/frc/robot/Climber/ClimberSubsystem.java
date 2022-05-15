@@ -10,8 +10,6 @@ import com.revrobotics.SparkMaxLimitSwitch.Type;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,8 +18,6 @@ import frc.robot.Util.sim.RevEncoderSimWrapper;
 public class ClimberSubsystem extends SubsystemBase {
     private final SimableCANSparkMax leftMotor, rightMotor;
     private final SimableCANSparkMax[] motors;
-    private final Solenoid armsSolenoid;
-    private final Solenoid hooksSolenoid;
     private final RelativeEncoder encoder;
     private final SparkMaxLimitSwitch limitSwitch;
     private final DigitalInput proximitySensor;
@@ -29,8 +25,6 @@ public class ClimberSubsystem extends SubsystemBase {
     public ClimberSubsystem() {
         this.leftMotor = new SimableCANSparkMax(ClimberConstants.LEFT_WINCH_MOTOR_ID, MotorType.kBrushless);
         this.rightMotor = new SimableCANSparkMax(ClimberConstants.RIGHT_WINCH_MOTOR_ID, MotorType.kBrushless);
-        this.armsSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.ARMS_SOLENOID_ID);
-        this.hooksSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, ClimberConstants.HOOKS_SOLENOID_ID);
         this.encoder = this.leftMotor.getEncoder();
         this.proximitySensor = new DigitalInput(ClimberConstants.PROXIMITY_SENSOR_ID);
         this.limitSwitch = this.leftMotor.getReverseLimitSwitch(Type.kNormallyOpen);
@@ -66,22 +60,6 @@ public class ClimberSubsystem extends SubsystemBase {
 
     public void setWinchPosition(double position) {
         this.encoder.setPosition(position);
-    }
-
-    public boolean getArmsSolenoid() {
-        return this.armsSolenoid.get();
-    }
-
-    public boolean getHooksSolenoid() {
-        return this.hooksSolenoid.get();
-    }
-
-    public void setArmsSolenoid(boolean state) {
-        this.armsSolenoid.set(state);
-    }
-
-    public void setHangingSolenoid(boolean state) {
-        this.hooksSolenoid.set(state);
     }
 
     public boolean getProximitySensor() {

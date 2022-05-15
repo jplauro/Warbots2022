@@ -13,10 +13,11 @@ public class TurretConstants {
     public static final double MOD_SPEED = 1.0;
     public static final double MOD_SPEED_MAX = 0.8;
     public static final double MANUAL_AIMING_MOD_SPEED = 4.0;
+    public static final double CALIBRATION_MOD_SPEED = 0.17;
 
     public static final double LOW_LIMIT_DEGREES = -195.0;
     public static final double HIGH_LIMIT_DEGREES = 220.0;
-    // The below is in absolute degrees relative to the turntable
+    // The below is in absolute degrees relative to the turret
     // To be within frame perimeter, the turret must face backwards
     public static final double STOWED_DEGREES = 0.0;
     public static final double OFFSET_DEGREES = -4.0;

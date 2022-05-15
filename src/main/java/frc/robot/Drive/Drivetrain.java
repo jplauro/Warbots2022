@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Controls.ControlConstants;
 import frc.robot.Util.sim.NavxWrapper;
 import frc.robot.Util.sim.RevEncoderSimWrapper;
 
@@ -115,15 +116,15 @@ public class Drivetrain extends SubsystemBase {
             motor.setSmartCurrentLimit(DriveConstants.CURRENT_LIMIT);
         }
 
-        this.frontRightMotor.setOpenLoopRampRate(DriveConstants.RAMP_RATE);
-        this.frontLeftMotor.setOpenLoopRampRate(DriveConstants.RAMP_RATE);
+        this.frontRightMotor.setOpenLoopRampRate(ControlConstants.RAMP_RATE);
+        this.frontLeftMotor.setOpenLoopRampRate(ControlConstants.RAMP_RATE);
 
         this.setBrake(DriveConstants.BRAKE_WHEN_IDLE);
     }
 
     private void initDrive() {
         this.drive = new DifferentialDrive(this.frontLeftMotor, this.frontRightMotor);
-        this.drive.setMaxOutput(DriveConstants.SPEED_MAX);
+        this.drive.setMaxOutput(ControlConstants.SPEED_MAX);
     }
 
     private void initSensors() {
